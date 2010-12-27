@@ -1,6 +1,13 @@
 package com.fbqr.android;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -13,10 +20,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Contacts.People;
 import android.util.Log;
 import android.view.View;
@@ -131,7 +141,11 @@ public class FbQrAndroid extends Activity{
 		    tv.setText(db.showData());
 		    db.close();	
 	     	
-	     	    	
+		    String[] names = {"1","2","3","4"};
+	     	String[] displays = {"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs1319.snc4/161115_100001728618691_59195_q.jpg",
+	     			"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs335.snc4/41705_100000212124399_1244707_q.jpg"};
+	     	for(int i=0;i<names.length;i++)
+	     		saveDisplay(displays[i],names[i]) ;   	
 	     }
 	   
 	   
@@ -282,4 +296,42 @@ public class FbQrAndroid extends Activity{
 	            }
 	        }
 	    }
+	   
+		private void saveDisplay(String fileUrl,String uid){
+			String PATH = "/data/data/com.fbqr.android/files/";  
+			
+			URL myFileUrl =null; 
+			Bitmap bmImg;
+			try {
+				myFileUrl= new URL(fileUrl);
+			} catch (MalformedURLException e) {		
+				e.printStackTrace();
+			}
+			try {
+				HttpURLConnection conn= (HttpURLConnection)myFileUrl.openConnection();
+				conn.setDoInput(true);
+				conn.connect();
+				//int length = conn.getContentLength();
+				//int[] bitmapData =new int[length];
+				//byte[] bitmapData2 =new byte[length];
+				InputStream is = conn.getInputStream();
+			
+				bmImg= BitmapFactory.decodeStream(is);
+				
+				OutputStream outStream = null;
+				File dir = new File(PATH);
+				dir.mkdirs();
+				File file = new File(PATH,uid+".PNG");
+				   
+				outStream = new FileOutputStream(file);
+				bmImg.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+				outStream.flush();
+				outStream.close();
+				   
+				Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 }

@@ -24,6 +24,7 @@ public class FbQrArrayAdapter extends ArrayAdapter<String> {
 	private final Activity context;
 	private final String[] names;
 	private final String[] displays;
+	private final String PATH = "/data/data/com.fbqr.android/files/";  
 	
 	public FbQrArrayAdapter(Activity context, String[] names,String[] displays) {
 		super(context, R.layout.rowlayout, names);
@@ -40,37 +41,8 @@ public class FbQrArrayAdapter extends ArrayAdapter<String> {
 		TextView label = (TextView) rowView.findViewById(R.id.label);
 		label.setText(names[position]);
 		System.out.println(names[position]);
-     	if(displays[position]!=null){
-			downloadFile(displays[position]);
-			ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-			imageView.setImageBitmap(bmImg);			
-     	}
-		return rowView;
-	}
-
-
-
-	Bitmap bmImg;
-	void downloadFile(String fileUrl){
-		URL myFileUrl =null; 
-		try {
-			myFileUrl= new URL(fileUrl);
-		} catch (MalformedURLException e) {		
-			e.printStackTrace();
-		}
-		try {
-			HttpURLConnection conn= (HttpURLConnection)myFileUrl.openConnection();
-			conn.setDoInput(true);
-			conn.connect();
-			//int length = conn.getContentLength();
-			//int[] bitmapData =new int[length];
-			//byte[] bitmapData2 =new byte[length];
-			InputStream is = conn.getInputStream();
-		
-			bmImg = BitmapFactory.decodeStream(is);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+     	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+		imageView.setImageBitmap(BitmapFactory.decodeFile(PATH+names[position]+".PNG"));		
+     	
+		return rowView;	}
 }
