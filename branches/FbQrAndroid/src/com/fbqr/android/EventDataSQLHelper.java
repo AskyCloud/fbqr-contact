@@ -18,10 +18,10 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 	public static final String UID = "uid";
 	public static final String NAME = "name";
 	public static final String PHONE = "phone_number";
+	public static final String EMAIL = "email";
+	public static final String STATUS = "status";
 	public static final String ADDRESS = "address";
 	public static final String WEBSITE = "website";
-	public static final String STATUS = "status";
-	public static final String EMAIL = "email";
 	public static final String LAST_UPDATE = "last_update";
 
 	public EventDataSQLHelper(Context context) {
@@ -45,6 +45,11 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		db.execSQL("DROP TABLE IF EXISTS "+TABLE); 
+        onCreate(db); 
+	}
+	
+	public void delete(SQLiteDatabase db) {
 		db.execSQL("DROP TABLE IF EXISTS "+TABLE); 
         onCreate(db); 
 	}

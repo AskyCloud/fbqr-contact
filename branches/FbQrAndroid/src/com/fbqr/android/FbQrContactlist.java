@@ -25,10 +25,10 @@ public class FbQrContactlist extends ListActivity {
      	
      	String[] names = new String[cursor.getCount()];
      	int i=0;
-     	
+     	FbQrProfile profile;
      	while (cursor.moveToNext()) {
-     	      String title = cursor.getString(3);
-     	      names[i++]=title;
+     		  profile=db.getProfile(cursor);
+     	      names[i++]=profile.phone;
      	      //ret.append(title + "\n");
      	      /*for(int i=0;i<9;i++){
      	    	  String title = cursor.getString(i);

@@ -125,14 +125,14 @@ public class FbQrAndroid extends Activity{
 	     	if(readQR.profileList.size()>0)
 	     		tv.setText(readQR.profileList.get(0).phone);
 	     	
-	     	FbQrProfile data = new FbQrProfile();
+	     	db.delete();
+	     	  	FbQrProfile data = new FbQrProfile();
 	     	data.id="1";
 	     	data.phone="2";
 	     	data.email="3";
-	     	FbQrDatabase x=new FbQrDatabase(this);
-	        x.addEvent(data);
-		    tv.setText(x.showEvents());
-		    x.close();	
+	     	db.addEvent(data);
+		    tv.setText(db.showEvents());
+		    db.close();	
 	     	
 	     	    	
 	     }
