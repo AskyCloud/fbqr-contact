@@ -18,14 +18,24 @@ public class FbQrContactlist extends ListActivity {
 		// Create an array of Strings, that will be put to our ListActivity
 		
 		
-		String[] names = new String[] { "Linux", "Windows7", "Eclipse", "Suse",
-				"Ubuntu", "Solaris", "Android", "iPhone" };
 		
-		FbQrDatabase x=new FbQrDatabase(this);
-     	x.addEvent("fdfafasdfasfsa");
-     	x.addEvent("12222");
-     	names[0]=x.showEvents().toString();
-     	x.close();
+			
+		FbQrDatabase db=new FbQrDatabase(this);
+     	Cursor cursor=db.getEvents();
+     	
+     	String[] names = new String[cursor.getCount()];
+     	int i=0;
+     	
+     	while (cursor.moveToNext()) {
+     	      String title = cursor.getString(3);
+     	      names[i++]=title;
+     	      //ret.append(title + "\n");
+     	      /*for(int i=0;i<9;i++){
+     	    	  String title = cursor.getString(i);
+     	    	  ret.append(title + "\n");
+     	      }*/
+     	    }
+     	db.close();
 				 
 		
 		// Use your own layout and point the adapter to the UI elements which contains the label

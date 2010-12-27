@@ -1,5 +1,7 @@
 package com.fbqr.android;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,11 +22,17 @@ public class FbQrDatabase{
     eventsData.close();
   }
 
-   public void addEvent(String title) {
+   public void addEvent(FbQrProfile data) {
     SQLiteDatabase db = eventsData.getWritableDatabase();
     ContentValues values = new ContentValues();
-    values.put(EventDataSQLHelper.TIME, System.currentTimeMillis());
-    values.put(EventDataSQLHelper.TITLE, title);
+    values.put(EventDataSQLHelper.ADDRESS, data.address);
+    values.put(EventDataSQLHelper.EMAIL, data.email);
+    //values.put(EventDataSQLHelper.LAST_UPDATE, );
+    values.put(EventDataSQLHelper.NAME, data.name);
+    values.put(EventDataSQLHelper.PHONE, data.phone);
+    values.put(EventDataSQLHelper.STATUS, data.status);
+    values.put(EventDataSQLHelper.UID, data.id);
+    values.put(EventDataSQLHelper.WEBSITE, data.website);
     db.insert(EventDataSQLHelper.TABLE, null, values);
   }
 
@@ -40,9 +48,13 @@ public class FbQrDatabase{
     StringBuilder ret = new StringBuilder("Saved Events:\n\n");
     while (cursor.moveToNext()) {
       long id = cursor.getLong(0);
-      long time = cursor.getLong(1);
-      String title = cursor.getString(2);
-      ret.append(id + ": " + time + ": " + title + "\n");
+      ret.append(id+ ":" );
+      String title = cursor.getString(1);
+      ret.append(title + "\n");
+      /*for(int i=0;i<9;i++){
+    	  String title = cursor.getString(i);
+    	  ret.append(title + "\n");
+      }*/
     }
     return ret.toString();
   }
