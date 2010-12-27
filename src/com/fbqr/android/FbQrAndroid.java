@@ -123,12 +123,12 @@ public class FbQrAndroid extends Activity{
 	       
 	        	
 	     	db.delete();
-	     	  	FbQrProfile data = new FbQrProfile();
+	     	FbQrProfile data = new FbQrProfile();
 	     	data.id="1";
 	     	data.phone="2";
 	     	data.email="3";
-	     	db.addEvent(data);
-		    tv.setText(db.showEvents());
+	     	db.addData(data);
+		    tv.setText(db.showData());
 		    db.close();	
 	     	
 	     	    	
@@ -207,11 +207,6 @@ public class FbQrAndroid extends Activity{
 			   //mSoap.getFriendInfo(uid, facebook.getAccessToken());
 			   //mSoap.getPhoneBook(facebook.getAccessToken(),new getData());
 			   
-			   
-			  
-				   
-               
-			  
 			  // mAsyncRunner.request("me", new SampleRequestListener());
 			  
 			  // browser.clearCache(isFinishing());
@@ -220,20 +215,20 @@ public class FbQrAndroid extends Activity{
 		   }
 		   public void onError(DialogError e)
 		    {
-			   Toast.makeText(FbQrAndroid.this, "fail...", Toast.LENGTH_LONG).show();
+			   Toast.makeText(FbQrAndroid.this, "login fail...", Toast.LENGTH_LONG).show();
 			   System.out.println("Error: " + e.getMessage());
 		    }
 
 		    public void onFacebookError(FacebookError e)
 		    {
-		    	Toast.makeText(FbQrAndroid.this, "fail...", Toast.LENGTH_LONG).show();
+		    	Toast.makeText(FbQrAndroid.this, "login fail...", Toast.LENGTH_LONG).show();
 		        System.out.println("Error: " + e.getMessage());
 		    }
 
 		    
 		    public void onCancel()
 		    {
-		    	Toast.makeText(FbQrAndroid.this, "fail...", Toast.LENGTH_LONG).show();
+		    	Toast.makeText(FbQrAndroid.this, "login fail...", Toast.LENGTH_LONG).show();
 		    }
 		 }
 	   
@@ -248,11 +243,12 @@ public class FbQrAndroid extends Activity{
 	                       FbQrProfile x;
 	     				   String display=""+response.size();
 	     				   for(int i=0;i<response.size();i++){
-	     					    db.addEvent(response.get(i));
+	     					    db.addData(response.get(i));
 	     					    x=response.get(i);
 	     			           	display+=x.show()+"\n";
 	     			       }
-	     				   tv.setText(display);	                    }
+	     				   tv.setText(display);	                   
+	                    }
 	                });
 				 	
 				} catch (Exception e) {

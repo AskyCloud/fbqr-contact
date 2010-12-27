@@ -53,4 +53,9 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS "+TABLE); 
         onCreate(db); 
 	}
+	
+	public void update(SQLiteDatabase db) {
+		db.execSQL("DROP TABLE IF EXISTS "+TABLE); 
+        onCreate(db); 
+	}
 }
