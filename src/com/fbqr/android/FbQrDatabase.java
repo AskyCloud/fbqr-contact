@@ -37,6 +37,7 @@ public class FbQrDatabase{
 	    values.put(EventDataSQLHelper.STATUS, data.status);
 	    values.put(EventDataSQLHelper.UID, data.id);
 	    values.put(EventDataSQLHelper.WEBSITE, data.website);
+	    values.put(EventDataSQLHelper.DISPLAY, data.display);
 	    return values;
 	   
    }
@@ -80,7 +81,7 @@ public class FbQrDatabase{
 	    data.status=cursor.getString(5);
 	    data.address=cursor.getString(6);
 	    data.website=cursor.getString(7);
-	    data.last_update=cursor.getString(8);
+	    data.display=cursor.getString(8);
 	    return data;
   }
    
