@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <Button android:text="readqr" android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+	<Button android:text="profile" android:id="@+id/Button02" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button> 
+	<Button android:text="call" android:id="@+id/Button03" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+	
+<Button android:text="loginFb" android:id="@+id/Button04" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+<TextView android:text="@+id/TextView01" android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+
+
+</LinearLayout>
