@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,11 +14,12 @@ import android.widget.Toast;
 
 public class FbQrContactlist extends ListActivity {
 	/** Called when the activity is first created. */
+	FbQrDatabase db=new FbQrDatabase(this);
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Create an array of Strings, that will be put to our ListActivity
 		
-		FbQrDatabase db=new FbQrDatabase(this);
+		
      	Cursor cursor=db.getData();
      	//String[] names = {"1","2","3","4"};
      	//String[] displays = {"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs1319.snc4/161115_100001728618691_59195_q.jpg",
@@ -28,7 +30,7 @@ public class FbQrContactlist extends ListActivity {
      	FbQrProfile profile;
      	while (cursor.moveToNext()) {
      		  profile=db.getProfile(cursor);
-     	      names[i]=profile.phone;
+     	      names[i]=profile.name;
      	      uids[i++]=profile.id;
      	      //ret.append(title + "\n");
      	      /*for(int i=0;i<9;i++){
@@ -47,9 +49,13 @@ public class FbQrContactlist extends ListActivity {
 		super.onListItemClick(l, v, position, id);
 		// Get the item that was clicked
 		Object o = this.getListAdapter().getItem(position);
-		String keyword = o.toString();
-		Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_LONG)
-				.show();
+		FbQrProfile profile=db.getProfile(position);
+		String keyword = profile.name;
+		//Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_LONG).show();
+		if (keyword == null) return;
+		   Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
+		   FbQrContactlist.this.startActivity(intent);
+		
 
 	}
 }
