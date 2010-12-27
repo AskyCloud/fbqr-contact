@@ -27,22 +27,37 @@ public class FbQrDatabase{
 	   eventsData.delete(db);
    }
 
-
-   public void addEvent(FbQrProfile data) {
+   private ContentValues addValues(FbQrProfile data){
+	   ContentValues values = new ContentValues();
+	    values.put(EventDataSQLHelper.ADDRESS, data.address);
+	    values.put(EventDataSQLHelper.EMAIL, data.email);
+	    //values.put(EventDataSQLHelper.LAST_UPDATE, );
+	    values.put(EventDataSQLHelper.NAME, data.name);
+	    values.put(EventDataSQLHelper.PHONE, data.phone);
+	    values.put(EventDataSQLHelper.STATUS, data.status);
+	    values.put(EventDataSQLHelper.UID, data.id);
+	    values.put(EventDataSQLHelper.WEBSITE, data.website);
+	    return values;
+	   
+   }
+   
+  public void addData(FbQrProfile data) {
     SQLiteDatabase db = eventsData.getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put(EventDataSQLHelper.ADDRESS, data.address);
-    values.put(EventDataSQLHelper.EMAIL, data.email);
-    //values.put(EventDataSQLHelper.LAST_UPDATE, );
-    values.put(EventDataSQLHelper.NAME, data.name);
-    values.put(EventDataSQLHelper.PHONE, data.phone);
-    values.put(EventDataSQLHelper.STATUS, data.status);
-    values.put(EventDataSQLHelper.UID, data.id);
-    values.put(EventDataSQLHelper.WEBSITE, data.website);
-    db.insert(EventDataSQLHelper.TABLE, null, values);
+    if(updateData(data)) return;
+    db.insert(EventDataSQLHelper.TABLE, null, addValues(data));        
   }
-
-   public Cursor getEvents() {
+  
+  public boolean updateData(FbQrProfile data) {
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  return db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.UID+ "=" + data.id, null)>0;
+ }
+  
+  public boolean deleteData(String uid){
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  return db.delete(EventDataSQLHelper.TABLE, EventDataSQLHelper.UID+ "=" + uid, null)>0;
+  } 
+   
+  public Cursor getData() {
     SQLiteDatabase db = eventsData.getReadableDatabase();
     Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, null, null, null, null, null);    
    // startManagingCursor(cursor);
@@ -68,9 +83,11 @@ public class FbQrDatabase{
 	    data.last_update=cursor.getString(8);
 	    return data;
   }
+   
 
-   public String showEvents() {
-	Cursor cursor=getEvents();
+
+   public String showData() {
+	Cursor cursor=getData();
     StringBuilder ret = new StringBuilder("Saved Events:\n\n");
     while (cursor.moveToNext()) {
       long id = cursor.getLong(0);
@@ -84,4 +101,6 @@ public class FbQrDatabase{
     }
     return ret.toString();
   }
+   
+   
 }

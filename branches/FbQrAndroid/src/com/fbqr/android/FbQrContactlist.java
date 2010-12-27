@@ -21,7 +21,7 @@ public class FbQrContactlist extends ListActivity {
 		
 			
 		FbQrDatabase db=new FbQrDatabase(this);
-     	Cursor cursor=db.getEvents();
+     	Cursor cursor=db.getData();
      	
      	String[] names = new String[cursor.getCount()];
      	int i=0;
