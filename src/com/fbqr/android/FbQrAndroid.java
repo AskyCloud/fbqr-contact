@@ -39,6 +39,7 @@ public class FbQrAndroid extends Activity{
 		Intent intent;
 		private TextView tv;
 		SOAPConnected mSoap = new SOAPConnected(FbQrAndroid.this);
+		FbQrDatabase db=new FbQrDatabase(this);
 		ReadFbQR readQR;
 	   /** Called when the activity is first created. */
 	   @Override
@@ -124,11 +125,14 @@ public class FbQrAndroid extends Activity{
 	     	if(readQR.profileList.size()>0)
 	     		tv.setText(readQR.profileList.get(0).phone);
 	     	
+	     	FbQrProfile data = new FbQrProfile();
+	     	data.id="1";
+	     	data.phone="2";
+	     	data.email="3";
 	     	FbQrDatabase x=new FbQrDatabase(this);
-	     	x.addEvent("fdfafasdfasfsa");
-	     	x.addEvent("12222");
-	     	tv.setText(x.showEvents());
-	     	x.close();
+	        x.addEvent(data);
+		    tv.setText(x.showEvents());
+		    x.close();	
 	     	
 	     	    	
 	     }
@@ -181,8 +185,7 @@ public class FbQrAndroid extends Activity{
 					        tv.setText(display);					        
 		            	}
 		            }
-		            
-		            
+		            	            
 		            // Handle successful scan
 		        } else if (resultCode == RESULT_CANCELED) {
 		            // Handle cancel
@@ -244,7 +247,8 @@ public class FbQrAndroid extends Activity{
 	                       FbQrProfile x;
 	     				   String display=""+response.size();
 	     				   for(int i=0;i<response.size();i++){
-	     			           	x=response.get(i);
+	     					    db.addEvent(response.get(i));
+	     					    x=response.get(i);
 	     			           	display+=x.show()+"\n";
 	     			       }
 	     				   tv.setText(display);	                    }
