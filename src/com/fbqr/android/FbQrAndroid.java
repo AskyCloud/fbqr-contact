@@ -140,12 +140,7 @@ public class FbQrAndroid extends Activity{
 	     	db.addData(data);
 		    tv.setText(db.showData());
 		    db.close();	
-	     	
-		    String[] names = {"1","2","3","4"};
-	     	String[] displays = {"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs1319.snc4/161115_100001728618691_59195_q.jpg",
-	     			"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs335.snc4/41705_100000212124399_1244707_q.jpg"};
-	     	for(int i=0;i<names.length;i++)
-	     		saveDisplay(displays[i],names[i]) ;   	
+	
 	     }
 	   
 	   
@@ -219,7 +214,7 @@ public class FbQrAndroid extends Activity{
 			   
 			   //String[] uid={"100001036241534","100000925243158"};
 			   //mSoap.getFriendInfo(uid, facebook.getAccessToken());
-			   //mSoap.getPhoneBook(facebook.getAccessToken(),new getData());
+			  // mSoap.getPhoneBook(facebook.getAccessToken(),new getData());
 			   
 			  // mAsyncRunner.request("me", new SampleRequestListener());
 			  
@@ -259,6 +254,7 @@ public class FbQrAndroid extends Activity{
 	     				   for(int i=0;i<response.size();i++){
 	     					    db.addData(response.get(i));
 	     					    x=response.get(i);
+	     					    if(x.display!=null) saveDisplay(x.display,x.id);
 	     			           	display+=x.show()+"\n";
 	     			       }
 	     				   tv.setText(display);	                   

@@ -23,14 +23,14 @@ import android.widget.TextView;
 public class FbQrArrayAdapter extends ArrayAdapter<String> {
 	private final Activity context;
 	private final String[] names;
-	private final String[] displays;
+	private final String[] uids;
 	private final String PATH = "/data/data/com.fbqr.android/files/";  
 	
-	public FbQrArrayAdapter(Activity context, String[] names,String[] displays) {
+	public FbQrArrayAdapter(Activity context, String[] names,String[] uids) {
 		super(context, R.layout.rowlayout, names);
 		this.context = context;
 		this.names = names;
-		this.displays = displays;
+		this.uids = uids;
 	}
 
 	@Override
@@ -42,7 +42,8 @@ public class FbQrArrayAdapter extends ArrayAdapter<String> {
 		label.setText(names[position]);
 		System.out.println(names[position]);
      	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-		imageView.setImageBitmap(BitmapFactory.decodeFile(PATH+names[position]+".PNG"));		
+		imageView.setImageBitmap(BitmapFactory.decodeFile(PATH+uids[position]+".PNG"));		
      	
-		return rowView;	}
+		return rowView;	
+	}
 }
