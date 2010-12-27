@@ -1,6 +1,13 @@
 package com.fbqr.android;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -13,10 +20,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Contacts.People;
 import android.util.Log;
 import android.view.View;
@@ -39,7 +49,8 @@ public class FbQrAndroid extends Activity{
 		Intent intent;
 		private TextView tv;
 		SOAPConnected mSoap = new SOAPConnected(FbQrAndroid.this);
-		ReadFbQR readQR;
+		FbQrDatabase db=new FbQrDatabase(this);
+		ReadFbQR readQR=new ReadFbQR() ;
 	   /** Called when the activity is first created. */
 	   @Override
 	   public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +60,7 @@ public class FbQrAndroid extends Activity{
 	       facebook = new Facebook(APP_ID);		    
 	       mAsyncRunner = new AsyncFacebookRunner(facebook);      
 	       
-	       facebook.authorize(FbQrAndroid.this,new String[] {"offline_access"},new AuthorizeListener());
+	       
 	       	
 	       
 	       //GUI
@@ -83,34 +94,14 @@ public class FbQrAndroid extends Activity{
 		     
 	       button3.setOnClickListener(new OnClickListener() {
 	    	   public void onClick(View v) {
-	    		   if (readQR.profileList.size()>0){
-	    	   		   String url = readQR.profileList.get(0).phone;
-		    		   if (url == null) return;
-		    		   Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+url));
-		    		   intent.putExtra("access_token", facebook.getAccessToken());
-		    		   
-		    		   FbQrAndroid.this.startActivity(intent);
-	    		   }
-	    		   else {
-	    			   
-	    			   ArrayList<FbQrProfile> profileList=mSoap.getProfile();
-	    			   if(profileList==null) return;
-	    			   if (profileList.size()>0){
-		    	   		   String url = profileList.get(0).phone;
-			    		   if (url == null) return;
-			    		   Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+url));
-			    		   intent.putExtra("access_token", facebook.getAccessToken());
-			    		   
-			    		   FbQrAndroid.this.startActivity(intent);
-	    		   		}
-	    		   }
+	    		   Intent intent = new Intent(v.getContext(), FbQrContactlist.class); 
+	     		   startActivity(intent); 
 			    }
 	        });   
 	       
 	       button4.setOnClickListener(new OnClickListener() {
 	    	   public void onClick(View v) {
-	    		  Intent intent = new Intent(v.getContext(), FbQrContactlist.class); 
-     		      startActivity(intent); 
+	    		   facebook.authorize(FbQrAndroid.this,new String[] {"offline_access"},new AuthorizeListener());
 	    		   
 			    }
 	        });    
@@ -120,17 +111,27 @@ public class FbQrAndroid extends Activity{
 	       	if(isOnline()) 	tv.setText("Internet Online");
 	       	else tv.setText("Internet Offline");
 	       
-	        readQR=new ReadFbQR();
-	     	if(readQR.profileList.size()>0)
-	     		tv.setText(readQR.profileList.get(0).phone);
-	     	
-	     	FbQrDatabase x=new FbQrDatabase(this);
-	     	x.addEvent("fdfafasdfasfsa");
-	     	x.addEvent("12222");
-	     	tv.setText(x.showEvents());
-	     	x.close();
-	     	
-	     	    	
+	        	
+	     	//db.delete();
+	     	FbQrProfile data = new FbQrProfile();
+	     	data.id="1";
+	     	data.phone="6683199838";
+	     	data.email="3";
+	     	data.name="blahblah";
+	     	db.addData(data);
+	     	data.id="2";
+	     	data.phone="6683199838";
+	     	data.email="3";
+	     	data.name="blahblah2";
+	     	db.addData(data);
+	     	data.id="3";
+	     	data.phone="6683199838";
+	     	data.email="3";
+	     	data.name="blahblah3";
+	     	db.addData(data);
+		    tv.setText(db.showData());
+		    db.close();	
+	
 	     }
 	   
 	   
@@ -162,27 +163,30 @@ public class FbQrAndroid extends Activity{
 		            	//mSoap.getMulti("15", facebook.getAccessToken(),"55555",new getData());
 		            }		            
 		            else{
-		            	if(readQR.profileList.size()<1) Toast.makeText(FbQrAndroid.this, "fail", Toast.LENGTH_LONG).show();
-		            	if(readQR.profileList.get(0).id!=null){
-		            		Toast.makeText(FbQrAndroid.this, "Single", Toast.LENGTH_LONG).show();
-			            	String[] uid=new String[readQR.profileList.size()];
-			            	for(int i=0;i<readQR.profileList.size();i++){
-			            		uid[i]=readQR.profileList.get(i).id;
-			            	}
-			            	mSoap.getFriendInfo(uid, facebook.getAccessToken(),new getData());
-		            	}
+		            	if(readQR.profileList.size()<1) Toast.makeText(FbQrAndroid.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
 		            	else{
-		            		FbQrProfile x;
-				            String display=readQR.profileList.size()+"\n"+contents+"\n\n";
-				            for(int i=0;i<readQR.profileList.size();i++){
-				            	x=readQR.profileList.get(i);
-				            	display+=x.show()+"\n";
-				            }
-					        tv.setText(display);					        
+			            	if(readQR.profileList.get(0).id!=null){
+			            		Toast.makeText(FbQrAndroid.this, "Single", Toast.LENGTH_LONG).show();
+				            	String[] uid=new String[readQR.profileList.size()];
+				            	for(int i=0;i<readQR.profileList.size();i++){
+				            		uid[i]=readQR.profileList.get(i).id;
+				            	}
+				            	mSoap.getFriendInfo(uid, facebook.getAccessToken(),new getData());
+			            	}
+			            	else{
+			            		if(readQR.type.matches("single")||readQR.type.matches("data")){
+				            		FbQrProfile x;
+						            String display=readQR.profileList.size()+"\n"+contents+"\n\n";
+						            for(int i=0;i<readQR.profileList.size();i++){
+						            	x=readQR.profileList.get(i);
+						            	display+=x.show()+"\n";
+						            }
+							        tv.setText(display);			
+			            		}
+			            	}
 		            	}
 		            }
-		            
-		            
+		                  
 		            // Handle successful scan
 		        } else if (resultCode == RESULT_CANCELED) {
 		            // Handle cancel
@@ -201,13 +205,8 @@ public class FbQrAndroid extends Activity{
 			   
 			   //String[] uid={"100001036241534","100000925243158"};
 			   //mSoap.getFriendInfo(uid, facebook.getAccessToken());
-			   //mSoap.getPhoneBook(facebook.getAccessToken(),new getData());
+			  // mSoap.getPhoneBook(facebook.getAccessToken(),new getData());
 			   
-			   
-			  
-				   
-               
-			  
 			  // mAsyncRunner.request("me", new SampleRequestListener());
 			  
 			  // browser.clearCache(isFinishing());
@@ -216,20 +215,20 @@ public class FbQrAndroid extends Activity{
 		   }
 		   public void onError(DialogError e)
 		    {
-			   Toast.makeText(FbQrAndroid.this, "fail...", Toast.LENGTH_LONG).show();
+			   Toast.makeText(FbQrAndroid.this, "login fail...", Toast.LENGTH_LONG).show();
 			   System.out.println("Error: " + e.getMessage());
 		    }
 
 		    public void onFacebookError(FacebookError e)
 		    {
-		    	Toast.makeText(FbQrAndroid.this, "fail...", Toast.LENGTH_LONG).show();
+		    	Toast.makeText(FbQrAndroid.this, "login fail...", Toast.LENGTH_LONG).show();
 		        System.out.println("Error: " + e.getMessage());
 		    }
 
 		    
 		    public void onCancel()
 		    {
-		    	Toast.makeText(FbQrAndroid.this, "fail...", Toast.LENGTH_LONG).show();
+		    	Toast.makeText(FbQrAndroid.this, "login fail...", Toast.LENGTH_LONG).show();
 		    }
 		 }
 	   
@@ -244,10 +243,13 @@ public class FbQrAndroid extends Activity{
 	                       FbQrProfile x;
 	     				   String display=""+response.size();
 	     				   for(int i=0;i<response.size();i++){
-	     			           	x=response.get(i);
+	     					    db.addData(response.get(i));
+	     					    x=response.get(i);
+	     					    if(x.display!=null) saveDisplay(x.display,x.id);
 	     			           	display+=x.show()+"\n";
 	     			       }
-	     				   tv.setText(display);	                    }
+	     				   tv.setText(display);	                   
+	                    }
 	                });
 				 	
 				} catch (Exception e) {
@@ -281,4 +283,42 @@ public class FbQrAndroid extends Activity{
 	            }
 	        }
 	    }
+	   
+		private void saveDisplay(String fileUrl,String uid){
+			String PATH = "/data/data/com.fbqr.android/files/";  
+			
+			URL myFileUrl =null; 
+			Bitmap bmImg;
+			try {
+				myFileUrl= new URL(fileUrl);
+			} catch (MalformedURLException e) {		
+				e.printStackTrace();
+			}
+			try {
+				HttpURLConnection conn= (HttpURLConnection)myFileUrl.openConnection();
+				conn.setDoInput(true);
+				conn.connect();
+				//int length = conn.getContentLength();
+				//int[] bitmapData =new int[length];
+				//byte[] bitmapData2 =new byte[length];
+				InputStream is = conn.getInputStream();
+			
+				bmImg= BitmapFactory.decodeStream(is);
+				
+				OutputStream outStream = null;
+				File dir = new File(PATH);
+				dir.mkdirs();
+				File file = new File(PATH,uid+".PNG");
+				   
+				outStream = new FileOutputStream(file);
+				bmImg.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+				outStream.flush();
+				outStream.close();
+				   
+				Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 }
