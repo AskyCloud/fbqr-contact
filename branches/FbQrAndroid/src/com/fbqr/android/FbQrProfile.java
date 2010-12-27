@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class FbQrProfile {
-	public String name,phone,address,email,website,id,status,last_update;
+	public String name,phone,address,email,website,id,status,last_update,display;
 	
 	public FbQrProfile(){
 		
@@ -19,19 +19,44 @@ public class FbQrProfile {
 	}
 	
 	private void set(SoapObject obj){
-		if(obj.hasProperty("id"))	id=obj.getProperty("id").toString();
-		if(obj.hasProperty("name")) name=obj.getProperty("name").toString();
-		if(obj.hasProperty("phone")) phone=obj.getProperty("phone").toString();
-		if(obj.hasProperty("address")) address=obj.getProperty("address").toString();
-		if(obj.hasProperty("email")) email=obj.getProperty("email").toString();
-		if(obj.hasProperty("website")) website=obj.getProperty("website").toString();
-		if(obj.hasProperty("status")) status=obj.getProperty("status").toString();
+		if(obj.hasProperty("id"))	{
+			id=obj.getProperty("id").toString();
+			if(id.equals("")) id=null;
+		}
+		if(obj.hasProperty("name")) {
+			name=obj.getProperty("name").toString();
+			if(name.equals("")) name=null;
+		}
+		if(obj.hasProperty("phone")){
+			phone=obj.getProperty("phone").toString();
+			if(phone.equals("")) phone=null;
+		}
+		if(obj.hasProperty("address")){
+			address=obj.getProperty("address").toString();
+			if(address.equals("")) address=null;
+		}
+		if(obj.hasProperty("email")) {
+			email=obj.getProperty("email").toString();
+			if(email.equals("")) email=null;
+		}
+		if(obj.hasProperty("website")){
+			website=obj.getProperty("website").toString();
+			if(website.equals("")) website=null;
+		}
+		if(obj.hasProperty("status")){
+			status=obj.getProperty("status").toString();
+			if(status.equals("")) status=null;
+		}
+		if(obj.hasProperty("display")){ 
+			display=obj.getProperty("display").toString();
+			if(display.equals("")) display=null;
+		}
 	}
 	
 	public String show(){
-		String display;
+		String text;
 		//display=name+"\n"+phone+"\n"+address+"\n"+email+"\n"+website+"\n"+id+"\n"+status;
-		display=name+"\n"+phone;
-		return display;
+		text=name+"\n"+display+"\n";
+		return text;
 	}
 }

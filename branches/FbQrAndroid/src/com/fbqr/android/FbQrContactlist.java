@@ -17,18 +17,19 @@ public class FbQrContactlist extends ListActivity {
 		super.onCreate(savedInstanceState);
 		// Create an array of Strings, that will be put to our ListActivity
 		
-		
-		
-			
 		FbQrDatabase db=new FbQrDatabase(this);
      	Cursor cursor=db.getData();
-     	
+     	//String[] names = {"1","2","3","4"};
+     	//String[] displays = {"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs1319.snc4/161115_100001728618691_59195_q.jpg",
+     	//		"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs335.snc4/41705_100000212124399_1244707_q.jpg"};
      	String[] names = new String[cursor.getCount()];
+     	String[] displays = new String[cursor.getCount()];
      	int i=0;
      	FbQrProfile profile;
      	while (cursor.moveToNext()) {
      		  profile=db.getProfile(cursor);
-     	      names[i++]=profile.phone;
+     	      names[i]=profile.phone;
+     	      displays[i++]=profile.display;
      	      //ret.append(title + "\n");
      	      /*for(int i=0;i<9;i++){
      	    	  String title = cursor.getString(i);
@@ -39,8 +40,7 @@ public class FbQrContactlist extends ListActivity {
 				 
 		
 		// Use your own layout and point the adapter to the UI elements which contains the label
-		this.setListAdapter(new ArrayAdapter<String>(this, R.layout.rowlayout,
-				R.id.label, names));
+     	this.setListAdapter(new FbQrArrayAdapter(this, names,displays));
 	}
 
 	@Override

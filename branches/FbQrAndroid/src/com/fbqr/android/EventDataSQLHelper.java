@@ -9,7 +9,7 @@ import android.util.Log;
 /** Helper to the database, manages versions and creation */
 public class EventDataSQLHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "fbqrx.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	// Table name
 	public static final String TABLE = "profiles";
@@ -23,6 +23,7 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 	public static final String ADDRESS = "address";
 	public static final String WEBSITE = "website";
 	public static final String LAST_UPDATE = "last_update";
+	public static final String DISPLAY = "display";
 
 	public EventDataSQLHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,7 +38,8 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 				+ EMAIL + " text,"
 				+ STATUS + " text," 
 				+ ADDRESS + " text," 
-				+ WEBSITE + " text," 				 
+				+ WEBSITE + " text," 		
+				+ DISPLAY + " text," 	
 				+ LAST_UPDATE + " intege);";
 		Log.d("EventsData", "onCreate: " + sql);
 		db.execSQL(sql);
