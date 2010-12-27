@@ -60,7 +60,7 @@ public class FbQrAndroid extends Activity{
 	       facebook = new Facebook(APP_ID);		    
 	       mAsyncRunner = new AsyncFacebookRunner(facebook);      
 	       
-	       facebook.authorize(FbQrAndroid.this,new String[] {"offline_access"},new AuthorizeListener());
+	       
 	       	
 	       
 	       //GUI
@@ -94,34 +94,14 @@ public class FbQrAndroid extends Activity{
 		     
 	       button3.setOnClickListener(new OnClickListener() {
 	    	   public void onClick(View v) {
-	    		   if (readQR.profileList.size()>0){
-	    	   		   String url = readQR.profileList.get(0).phone;
-		    		   if (url == null) return;
-		    		   Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+url));
-		    		   intent.putExtra("access_token", facebook.getAccessToken());
-		    		   
-		    		   FbQrAndroid.this.startActivity(intent);
-	    		   }
-	    		   else {
-	    			   
-	    			   ArrayList<FbQrProfile> profileList=mSoap.getProfile();
-	    			   if(profileList==null) return;
-	    			   if (profileList.size()>0){
-		    	   		   String url = profileList.get(0).phone;
-			    		   if (url == null) return;
-			    		   Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+url));
-			    		   intent.putExtra("access_token", facebook.getAccessToken());
-			    		   
-			    		   FbQrAndroid.this.startActivity(intent);
-	    		   		}
-	    		   }
+	    		   Intent intent = new Intent(v.getContext(), FbQrContactlist.class); 
+	     		   startActivity(intent); 
 			    }
 	        });   
 	       
 	       button4.setOnClickListener(new OnClickListener() {
 	    	   public void onClick(View v) {
-	    		  Intent intent = new Intent(v.getContext(), FbQrContactlist.class); 
-     		      startActivity(intent); 
+	    		   facebook.authorize(FbQrAndroid.this,new String[] {"offline_access"},new AuthorizeListener());
 	    		   
 			    }
 	        });    
@@ -132,11 +112,22 @@ public class FbQrAndroid extends Activity{
 	       	else tv.setText("Internet Offline");
 	       
 	        	
-	     	db.delete();
+	     	//db.delete();
 	     	FbQrProfile data = new FbQrProfile();
 	     	data.id="1";
-	     	data.phone="2";
+	     	data.phone="6683199838";
 	     	data.email="3";
+	     	data.name="blahblah";
+	     	db.addData(data);
+	     	data.id="2";
+	     	data.phone="6683199838";
+	     	data.email="3";
+	     	data.name="blahblah2";
+	     	db.addData(data);
+	     	data.id="3";
+	     	data.phone="6683199838";
+	     	data.email="3";
+	     	data.name="blahblah3";
 	     	db.addData(data);
 		    tv.setText(db.showData());
 		    db.close();	
