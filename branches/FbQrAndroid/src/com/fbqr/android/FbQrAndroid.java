@@ -40,7 +40,7 @@ public class FbQrAndroid extends Activity{
 		private TextView tv;
 		SOAPConnected mSoap = new SOAPConnected(FbQrAndroid.this);
 		FbQrDatabase db=new FbQrDatabase(this);
-		ReadFbQR readQR;
+		ReadFbQR readQR=new ReadFbQR() ;
 	   /** Called when the activity is first created. */
 	   @Override
 	   public void onCreate(Bundle savedInstanceState) {
@@ -121,10 +121,7 @@ public class FbQrAndroid extends Activity{
 	       	if(isOnline()) 	tv.setText("Internet Online");
 	       	else tv.setText("Internet Offline");
 	       
-	        readQR=new ReadFbQR();
-	     	if(readQR.profileList.size()>0)
-	     		tv.setText(readQR.profileList.get(0).phone);
-	     	
+	        	
 	     	db.delete();
 	     	  	FbQrProfile data = new FbQrProfile();
 	     	data.id="1";
@@ -166,26 +163,30 @@ public class FbQrAndroid extends Activity{
 		            	//mSoap.getMulti("15", facebook.getAccessToken(),"55555",new getData());
 		            }		            
 		            else{
-		            	if(readQR.profileList.size()<1) Toast.makeText(FbQrAndroid.this, "fail", Toast.LENGTH_LONG).show();
-		            	if(readQR.profileList.get(0).id!=null){
-		            		Toast.makeText(FbQrAndroid.this, "Single", Toast.LENGTH_LONG).show();
-			            	String[] uid=new String[readQR.profileList.size()];
-			            	for(int i=0;i<readQR.profileList.size();i++){
-			            		uid[i]=readQR.profileList.get(i).id;
-			            	}
-			            	mSoap.getFriendInfo(uid, facebook.getAccessToken(),new getData());
-		            	}
+		            	if(readQR.profileList.size()<1) Toast.makeText(FbQrAndroid.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
 		            	else{
-		            		FbQrProfile x;
-				            String display=readQR.profileList.size()+"\n"+contents+"\n\n";
-				            for(int i=0;i<readQR.profileList.size();i++){
-				            	x=readQR.profileList.get(i);
-				            	display+=x.show()+"\n";
-				            }
-					        tv.setText(display);					        
+			            	if(readQR.profileList.get(0).id!=null){
+			            		Toast.makeText(FbQrAndroid.this, "Single", Toast.LENGTH_LONG).show();
+				            	String[] uid=new String[readQR.profileList.size()];
+				            	for(int i=0;i<readQR.profileList.size();i++){
+				            		uid[i]=readQR.profileList.get(i).id;
+				            	}
+				            	mSoap.getFriendInfo(uid, facebook.getAccessToken(),new getData());
+			            	}
+			            	else{
+			            		if(readQR.type.matches("single")||readQR.type.matches("data")){
+				            		FbQrProfile x;
+						            String display=readQR.profileList.size()+"\n"+contents+"\n\n";
+						            for(int i=0;i<readQR.profileList.size();i++){
+						            	x=readQR.profileList.get(i);
+						            	display+=x.show()+"\n";
+						            }
+							        tv.setText(display);			
+			            		}
+			            	}
 		            	}
 		            }
-		            	            
+		                  
 		            // Handle successful scan
 		        } else if (resultCode == RESULT_CANCELED) {
 		            // Handle cancel
