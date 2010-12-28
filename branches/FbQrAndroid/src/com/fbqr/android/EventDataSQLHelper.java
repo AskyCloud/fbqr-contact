@@ -9,12 +9,13 @@ import android.util.Log;
 /** Helper to the database, manages versions and creation */
 public class EventDataSQLHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "fbqrdb.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	// Table name
 	public static final String TABLE = "profiles";
 
 	// Columns
+	public static final String ID = BaseColumns._ID;
 	public static final String UID = "uid";
 	public static final String NAME = "name";
 	public static final String PHONE = "phone_number";

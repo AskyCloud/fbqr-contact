@@ -57,6 +57,11 @@ public class FbQrDatabase{
 	  SQLiteDatabase db = eventsData.getWritableDatabase();
 	  return db.delete(EventDataSQLHelper.TABLE, EventDataSQLHelper.UID+ "=" + uid, null)>0;
   } 
+  
+  public boolean deleteData(int id){
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  return db.delete(EventDataSQLHelper.TABLE, EventDataSQLHelper.ID+ "=" + id, null)>0;
+  }
    
   public Cursor getData() {
     SQLiteDatabase db = eventsData.getReadableDatabase();
