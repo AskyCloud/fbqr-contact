@@ -7,14 +7,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 public class FbQrContactlist extends ListActivity {
 	/** Called when the activity is first created. */
 	FbQrDatabase db=new FbQrDatabase(this);
+	FbQrArrayAdapter adapList=null;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Create an array of Strings, that will be put to our ListActivity
@@ -41,21 +47,62 @@ public class FbQrContactlist extends ListActivity {
      	db.close();
 				 
 		// Use your own layout and point the adapter to the UI elements which contains the label
-     	this.setListAdapter(new FbQrArrayAdapter(this, names,uids));
+     	this.setListAdapter(adapList=new FbQrArrayAdapter(this, names,uids));
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
+		
 		super.onListItemClick(l, v, position, id);
 		// Get the item that was clicked
 		Object o = this.getListAdapter().getItem(position);
 		FbQrProfile profile=db.getProfile(position);
 		String keyword = profile.name;
 		//Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_LONG).show();
-		if (keyword == null) return;
-		   Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
-		   FbQrContactlist.this.startActivity(intent);
+		if (profile.phone == null) return;
+		Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
+		FbQrContactlist.this.startActivity(intent);
 		
-
+		
 	}
+	
+
+	private static final int searchBtnId = Menu.FIRST;
+	private static final int updateBtnId = Menu.FIRST+1;
+	private static final int deleteBtnId = Menu.FIRST+2;
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0,searchBtnId ,searchBtnId,"Search");
+		menu.add(0,updateBtnId ,updateBtnId,"Update");
+		menu.add(0,deleteBtnId ,deleteBtnId,"Delete");
+	    return super.onCreateOptionsMenu(menu);
+
+	  }
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case searchBtnId:
+	    	Toast.makeText(this, "You selected: Search" , Toast.LENGTH_LONG).show();
+	        return true;
+	    case updateBtnId:
+	    	Toast.makeText(this, "You selected: Update", Toast.LENGTH_LONG).show();
+	        return true;
+	    case deleteBtnId:
+	    	int _size =this.getListView().getCount();
+	    	for (int i =0; i< _size; i++) {
+	    		if(adapList.del[i]){
+	    			db.deleteData(i);
+	    		}
+	    			    		
+	    	}
+	    	adapList.notifyDataSetChanged();
+	    	Toast.makeText(this, "You selected: Delete", Toast.LENGTH_LONG).show();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+
 }
