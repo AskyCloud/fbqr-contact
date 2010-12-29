@@ -21,6 +21,7 @@ public class FbQrContactlist extends ListActivity {
 	/** Called when the activity is first created. */
 	FbQrDatabase db=new FbQrDatabase(this);
 	FbQrArrayAdapter adapList=null;
+	private int[] idx;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Create an array of Strings, that will be put to our ListActivity
@@ -32,12 +33,14 @@ public class FbQrContactlist extends ListActivity {
      	//		"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs335.snc4/41705_100000212124399_1244707_q.jpg"};
      	String[] names = new String[cursor.getCount()];
      	String[] uids = new String[cursor.getCount()];
+     	idx= new int[cursor.getCount()];
      	int i=0;
      	FbQrProfile profile;
      	while (cursor.moveToNext()) {
      		  profile=db.getProfile(cursor);
      	      names[i]=profile.name;
-     	      uids[i++]=profile.id;
+     	      idx[i]=cursor.getPosition();
+     	      uids[i++]=profile.uid;
      	      //ret.append(title + "\n");
      	      /*for(int i=0;i<9;i++){
      	    	  String title = cursor.getString(i);
@@ -55,15 +58,13 @@ public class FbQrContactlist extends ListActivity {
 		
 		super.onListItemClick(l, v, position, id);
 		// Get the item that was clicked
-		Object o = this.getListAdapter().getItem(position);
-		FbQrProfile profile=db.getProfile(position);
-		String keyword = profile.name;
+		//Object o = this.getListAdapter().getItem(position);
+		FbQrProfile profile=db.getProfile(idx[position]);
+		//String keyword = profile.name;
 		//Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_LONG).show();
-		if (profile.phone == null) return;
+		if (profile.phone == null)	return;
 		Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
-		FbQrContactlist.this.startActivity(intent);
-		
-		
+		FbQrContactlist.this.startActivity(intent);		
 	}
 	
 
@@ -72,8 +73,8 @@ public class FbQrContactlist extends ListActivity {
 	private static final int deleteBtnId = Menu.FIRST+2;
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0,searchBtnId ,searchBtnId,"Search");
-		menu.add(0,updateBtnId ,updateBtnId,"Update");
+		//menu.add(0,searchBtnId ,searchBtnId,"Search");
+		//menu.add(0,updateBtnId ,updateBtnId,"Update");
 		menu.add(0,deleteBtnId ,deleteBtnId,"Delete");
 	    return super.onCreateOptionsMenu(menu);
 
@@ -90,14 +91,15 @@ public class FbQrContactlist extends ListActivity {
 	    	Toast.makeText(this, "You selected: Update", Toast.LENGTH_LONG).show();
 	        return true;
 	    case deleteBtnId:
-	    	int _size =this.getListView().getCount();
+	    	/*int _size =this.getListView().getCount();
 	    	for (int i =0; i< _size; i++) {
 	    		if(adapList.del[i]){
-	    			db.deleteData(i);
+	    			db.deleteData(idx[i]);
 	    		}
 	    			    		
-	    	}
-	    	adapList.notifyDataSetChanged();
+	    	}*/
+	    	db.delete();	
+	    	adapList.notifyDataSetChanged ();
 	    	Toast.makeText(this, "You selected: Delete", Toast.LENGTH_LONG).show();
 	        return true;
 	    default:

@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Path;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,16 +43,19 @@ public class FbQrArrayAdapter extends ArrayAdapter<String> {
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = context.getLayoutInflater();
-		View rowView = inflater.inflate(R.layout.rowlayout_chkbox, null, true);
+		View rowView = inflater.inflate(R.layout.rowlayout, null, true);
+		//View rowView = inflater.inflate(R.layout.rowlayout_chkbox, null, true);
+		
+		//CheckBox chkbox = (CheckBox) rowView.findViewById(R.id.CheckBox01);
 		final TextView label = (TextView) rowView.findViewById(R.id.label);
-		CheckBox chkbox = (CheckBox) rowView.findViewById(R.id.CheckBox01);
 		label.setText(names[position]);
 		System.out.println(names[position]);
      	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-		imageView.setImageBitmap(BitmapFactory.decodeFile(PATH+uids[position]+".PNG"));	
+     	File img=new File(PATH+uids[position]+".PNG");
+     	if(img.exists())
+     		imageView.setImageBitmap(BitmapFactory.decodeFile(img.getPath()));	
 		
-		chkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {			 
-			@Override
+		/*chkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {			 
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				if (isChecked == true) {
@@ -60,7 +64,7 @@ public class FbQrArrayAdapter extends ArrayAdapter<String> {
 				// TODO Auto-generated method stub
 				
 			}
-		});
+		});*/
 
 		return rowView;	
 	}

@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class FbQrProfile {
-	public String name,phone,address,email,website,id,status,last_update,display;
+	public String name,phone,address,email,website,uid,status,last_update,display;
 	
 	public FbQrProfile(){
 		
@@ -20,8 +20,8 @@ public class FbQrProfile {
 	
 	private void set(SoapObject obj){
 		if(obj.hasProperty("id"))	{
-			id=obj.getProperty("id").toString();
-			if(id.equals("")) id=null;
+			uid=obj.getProperty("id").toString();
+			if(uid.equals("")) uid=null;
 		}
 		if(obj.hasProperty("name")) {
 			name=obj.getProperty("name").toString();
