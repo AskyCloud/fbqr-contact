@@ -90,6 +90,22 @@ public class FbQrDatabase{
 	  cursor.moveToPosition(id);
 	  return getProfile(cursor);
    }
+  
+  public void setAccessToken(String access_token){
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  ContentValues values = new ContentValues();
+	    values.put(EventDataSQLHelper.ACCESS_TOKEN, access_token);
+	  Boolean update=db.update(EventDataSQLHelper.cfgTABLE, values, EventDataSQLHelper.ID+ "= 1", null)>0;
+	  if(update) return ;
+	  else db.insert(EventDataSQLHelper.cfgTABLE, null, values);  
+   }
+  
+  public String getAccessToken(){
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  Cursor cursor = db.query(EventDataSQLHelper.cfgTABLE, null, null, null, null, null, null);
+	  if(!cursor.moveToFirst()) return null;
+	  return cursor.getString(1);
+   }
    
  public FbQrProfile getProfile(Cursor cursor) {
 	    FbQrProfile data=new FbQrProfile();

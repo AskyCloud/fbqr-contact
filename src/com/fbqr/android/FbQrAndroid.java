@@ -15,8 +15,10 @@ import org.json.JSONObject;
 
 
 import android.app.Activity;
+import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -31,7 +33,11 @@ import android.provider.Contacts.People;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,141 +46,83 @@ import android.widget.Toast;
 import com.facebook.android.*;
 import com.facebook.android.Facebook.DialogListener;
 
-public class FbQrAndroid extends Activity{
+public class FbQrAndroid extends TabActivity{
 		public static final String APP_ID = "146472442045328";
 		
 		private Facebook facebook;
 		private AsyncFacebookRunner mAsyncRunner;
 		Button button,button2,button3,button4;
-		Intent intent;
 		private TextView tv;
 		SOAPConnected mSoap = new SOAPConnected(FbQrAndroid.this);
 		FbQrDatabase db=new FbQrDatabase(this);
 		ReadFbQR readQR=new ReadFbQR() ;
+ 
 	   /** Called when the activity is first created. */
 	   @Override
 	   public void onCreate(Bundle savedInstanceState) {
 	       super.onCreate(savedInstanceState);
 	       
-	       //Facebook
+           //Facebook
 	       facebook = new Facebook(APP_ID);		    
 	       mAsyncRunner = new AsyncFacebookRunner(facebook);      
 	       
+	       if(isOnline()){
+	    	   facebook.setAccessToken(db.getAccessToken());
+	    	   mAsyncRunner.request("me", new TokenRequestListener());
+	       }	       
+	       
 	       //GUI
-	       setContentView(R.layout.main);
+	       Resources res = getResources(); // Resource object to get Drawables
+	       TabHost tabHost = getTabHost();  // The activity TabHost
+	       TabHost.TabSpec spec;  // Resusable TabSpec for each tab
+	       Intent intent;  // Reusable Intent for each tab
 	       
-	       tv=(TextView) findViewById(R.id.TextView01);
-	       
-	       button = (Button) findViewById(R.id.Button01);
-	       button2 = (Button) findViewById(R.id.Button02);
-	       button3 = (Button) findViewById(R.id.Button03);
-	       button4 = (Button) findViewById(R.id.Button04);
-	       	       
-	       
-	       button.setOnClickListener(new OnClickListener() {
-	    	   public void onClick(View v) {
-			        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-			        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-			        startActivityForResult(intent, 2);
-			    }
-	        });
-	        
-	        
-	       button2.setOnClickListener(new OnClickListener() {
-		    	   public void onClick(View v) {
-		    		   Intent intent = new Intent(v.getContext(), FbQrWeb.class);
-		    		   intent.putExtra("access_token", facebook.getAccessToken());		    		   
-		    		   startActivity(intent);
-				    }
-		        });
-		     
-	       button3.setOnClickListener(new OnClickListener() {
-	    	   public void onClick(View v) {
-	    		   Intent intent = new Intent(v.getContext(), FbQrContactlist.class); 
-	    		   startActivity(intent); 
-			    }
-	        });   
-	       
-	       button4.setOnClickListener(new OnClickListener() {
-	    	   public void onClick(View v) {
-	    		   if(isOnline()) facebook.authorize(FbQrAndroid.this,new String[] {"offline_access"},new AuthorizeListener());
-	    		   else Toast.makeText(FbQrAndroid.this, "No Internet Connection...", Toast.LENGTH_LONG).show();
-			    }
-	        });    
-	       
+	    // Create an Intent to launch an Activity for the tab (to be reused)
+	       intent = new Intent().setClass(this, FbQrContactlist.class);
 
-	       	
+	       // Initialize a TabSpec for each tab and add it to the TabHost
+	       spec = tabHost.newTabSpec("contact").setIndicator("Contact",
+	                         res.getDrawable(R.drawable.tab_one))
+	                     .setContent(intent);
+	       tabHost.addTab(spec);
+
+	       // Do the same for the other tabs
+	       intent = new Intent().setClass(this, FbQrWeb.class);
+	       intent.putExtra("access_token", facebook.getAccessToken());
+	       spec = tabHost.newTabSpec("profile").setIndicator("Profile",
+	                         res.getDrawable(R.drawable.tab_one))
+	                     .setContent(intent);
+	       tabHost.addTab(spec);
+
+	       //
+	       // Initialize a TabSpec for each tab and add it to the TabHost
+	       intent = new Intent().setClass(this, FbQrBackground.class);
+  	       intent.putExtra("MODE", "READQR");
+	       spec = tabHost.newTabSpec("readqr").setIndicator("ReadQR",
+	                         res.getDrawable(R.drawable.tab_one))
+	                     .setContent(intent);	       
+	         
+	       tabHost.addTab(spec);	       
+	       tabHost.setCurrentTab(0);       
 	     }
 
 	   public boolean isOnline() {		   
 		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-		        return true;
-		    }
-		    return false;
-		}
-	   
-	   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		  super.onActivityResult(requestCode, resultCode, data);
-		  facebook.authorizeCallback(requestCode, resultCode, data);
-		  
-		  //Result of QRscan
-		  if (requestCode == 2) {
-			  		if (resultCode == RESULT_OK) {
-			  		// Handle successful scan
-			  			String contents = data.getStringExtra("SCAN_RESULT");		           
-			           
-			            readQR.read(contents);
-			            
-			            //MultiQR
-			            if(readQR.type.matches("multiqr_n")){			            	
-			            	//add data to db
-			            	for(int i=0;i<readQR.profileList.size();i++) {
-			            		if(readQR.profileList.get(i).phone!=null)
-			            			db.addData(readQR.profileList.get(i));
-			            	}
-			            	if(isOnline()&&facebook.getAccessToken()!=null)
-			            		mSoap.getMulti(readQR.qrid, facebook.getAccessToken(),"",new getData());
-			            }		            
-			            else{
-			            	//Reject unknow type QR
-			            	if(readQR.profileList.size()<1) Toast.makeText(FbQrAndroid.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
-			            	else{
-			            		//add data to db
-			            		for(int i=0;i<readQR.profileList.size();i++) {
-			            			if(readQR.profileList.get(i).phone!=null)
-			            				db.addData(readQR.profileList.get(i));
-			            		}			            			
-			            		//FbQr type	
-			            		if(readQR.profileList.get(0).uid!=null){
-			            			if(isOnline()&&facebook.getAccessToken()!=null){
-			            		
-			            				String[] uids=new String[readQR.profileList.size()];
-			            				for(int i=0;i<readQR.profileList.size();i++)
-			            					uids[i]=readQR.profileList.get(i).uid;
-			            				mSoap.getFriendInfo(uids, facebook.getAccessToken(),new getData());
-					            					            	
-			            			}
-			            		}
-			            	}
-			            }			    
-		        } else if (resultCode == RESULT_CANCELED) {
-		            // Handle cancel
-		        }
-		   }		 		
-		}
-	   
+		    if (netInfo != null && netInfo.isConnectedOrConnecting()) return true;		    
+		    else return false;
+		}	   
+	      
 	   class AuthorizeListener implements DialogListener {
 		   
 		   public void onComplete(Bundle values) {
 			   Toast.makeText(FbQrAndroid.this, "logined", Toast.LENGTH_LONG).show();
 			   //Get PhoneBook
-			   //if(db.isEmpty()){
+			   if(db.getAccessToken()==null){    
 				   Toast.makeText(FbQrAndroid.this, "Downloading PhoneBook", Toast.LENGTH_LONG).show();
 				   mSoap.getPhoneBook(facebook.getAccessToken(),new getData());
-			   //}
-			   // mAsyncRunner.request("me", new SampleRequestListener());			  
+			   }
+			   db.setAccessToken(facebook.getAccessToken());  
 		   }
 		   public void onError(DialogError e)
 		    {
@@ -226,28 +174,24 @@ public class FbQrAndroid extends Activity{
 			}
 	   }
 	   
-	   public class SampleRequestListener extends BaseRequestListener {
+	   public class TokenRequestListener extends BaseRequestListener {
 
 	        public void onComplete(final String response) {
 	            try {
-	                // process the response here: executed in background thread
+	                
 	                Log.d("Facebook-Example", "Response: " + response.toString());
 	                JSONObject json = Util.parseJson(response);
 	                final String name = json.getString("name");
-
-	                // then post the processed result back to the UI thread
-	                // if we do not do this, an runtime exception will be generated
-	                // e.g. "CalledFromWrongThreadException: Only the original
-	                // thread that created a view hierarchy can touch its views."
 	                FbQrAndroid.this.runOnUiThread(new Runnable() {
 	                    public void run() {
-	                        tv.setText("Hello there, " + name + "!");
+	                       // tv.setText("Hello there, " + name + "!");
 	                    }
 	                });
 	            } catch (JSONException e) {
 	                Log.w("Facebook-Example", "JSON Error in response");
-	            } catch (FacebookError e) {
+	            } catch (final FacebookError e) {
 	                Log.w("Facebook-Example", "Facebook Error: " + e.getMessage());
+	                facebook.authorize(FbQrAndroid.this,new String[] {"offline_access"},new AuthorizeListener());
 	            }
 	        }
 	    }
