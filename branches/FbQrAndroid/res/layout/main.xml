@@ -1,100 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<<<<<<< .mine<TableLayout
-android:id="@+id/widget57"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent"
-android:orientation="vertical"
-xmlns:android="http://schemas.android.com/apk/res/android"
->
-<RelativeLayout
-android:id="@+id/widget56"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
->
-=======<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-    <Button android:text="readqr" android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-        <Button android:text="profile" android:id="@+id/Button02" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button> 
-        <Button android:text="list" android:id="@+id/Button03" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-        
-<Button android:text="loginFb" android:id="@+id/Button04" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-<TextView android:text="@+id/TextView01" android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
->>>>>>> .theirs
-<TextView android:visibility="invisible"  android:text="@+id/TextView01" android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-
-<<<<<<< .mine<Button
-android:id="@+id/widget69"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_alignParentTop="true"
-android:layout_centerHorizontal="true" android:background="@drawable/ui_02">
-</Button>
-</RelativeLayout>
-<RelativeLayout
-android:id="@+id/widget58"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
->
-<Button android:layout_width="wrap_content" 
-android:text="@+id/Button05" 
-android:id="@+id/Button05" 
-android:layout_height="wrap_content" 
-android:background="@drawable/ui_03">
-</Button>
-<Button
-android:id="@+id/widget70"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Button"
-android:layout_alignParentTop="true"
-android:layout_toRightOf="@+id/Button05" android:background="@drawable/ui_04">
-</Button>
-
-</RelativeLayout>
-<RelativeLayout
-android:id="@+id/widget59"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
->
-
-<ImageView android:id="@+id/ImageView01" android:layout_width="wrap_content" android:tileMode="repeat" android:layout_height="wrap_content" android:background="@drawable/ui_05"></ImageView>
-</RelativeLayout>
- <LinearLayout android:id="@+id/LinearLayout" 
-        android:orientation="horizontal"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" android:gravity="bottom|center" android:layout_gravity="bottom">
-<Button
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_alignParentTop="true"
-android:layout_centerHorizontal="true"
-android:id="@+id/Button03" android:background="@drawable/ui_06">
-</Button>
-<Button
-android:layout_alignParentTop="true"
-android:layout_alignParentRight="true"
-android:id="@+id/Button04" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/ui_07">
-</Button>
-<Button
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_alignParentTop="true"
-android:layout_toLeftOf="@+id/Button01"
-android:id="@+id/Button02" android:background="@drawable/ui_08">
-</Button>
-<Button
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_alignParentTop="true"
-android:layout_alignParentLeft="true"
-android:id="@+id/Button01" android:background="@drawable/ui_09">
-</Button>
-
-</LinearLayout>
-<LinearLayout android:id="@+id/TabOne" android:layout_width="wrap_content" android:layout_height="wrap_content"></LinearLayout>
-<LinearLayout android:id="@+id/tab_one" android:layout_width="wrap_content" android:layout_height="wrap_content"></LinearLayout>
-</TableLayout>
-=======</LinearLayout>>>>>>>> .theirs
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="5dp">
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="5dp" />
+    </LinearLayout>
+</TabHost>
