@@ -35,7 +35,8 @@ public class FbQrDatabase{
 	   ContentValues values = new ContentValues();
 	    values.put(EventDataSQLHelper.ADDRESS, data.address);
 	    values.put(EventDataSQLHelper.EMAIL, data.email);
-	    //values.put(EventDataSQLHelper.LAST_UPDATE, );
+	    values.put(EventDataSQLHelper.LAST_UPDATE,System.currentTimeMillis());
+	   if(data.count!=-1) values.put(EventDataSQLHelper.COUNT,data.count);
 	    values.put(EventDataSQLHelper.NAME, (data.name!=null)?data.name:data.phone);
 	    values.put(EventDataSQLHelper.PHONE, data.phone);
 	    values.put(EventDataSQLHelper.STATUS, data.status);
@@ -46,9 +47,11 @@ public class FbQrDatabase{
 	   
    }
    
+  
   public void addData(FbQrProfile data) {
 	  SQLiteDatabase db = eventsData.getWritableDatabase();
 	  if(updateData(data)) return;
+	  data.count=0;
 	  db.insert(EventDataSQLHelper.TABLE, null, addValues(data));        
   }
   
@@ -69,8 +72,8 @@ public class FbQrDatabase{
   
   public Cursor getData() {
 	  SQLiteDatabase db = eventsData.getReadableDatabase();
-	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, null, null, null, null, null);    
-	  // startManagingCursor(cursor);
+	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, null, null, null, null, EventDataSQLHelper.COUNT + " DESC"); 
+	 // startManagingCursor(cursor);
 	  return cursor;
   }
   
@@ -98,6 +101,9 @@ public class FbQrDatabase{
 	    data.address=cursor.getString(6);
 	    data.website=cursor.getString(7);
 	    data.display=cursor.getString(8);
+	    data.password=cursor.getString(9);
+	    data.count=cursor.getLong(10);
+	    data.last_update=cursor.getLong(11);
 	    return data;
   }
    
@@ -117,7 +123,5 @@ public class FbQrDatabase{
       }*/
     }
     return ret.toString();
-  }
-   
-   
+  }   
 }
