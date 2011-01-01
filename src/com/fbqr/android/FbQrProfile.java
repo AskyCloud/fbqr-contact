@@ -8,7 +8,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class FbQrProfile {
-	public String name,phone,address,email,website,uid,status,last_update,display;
+	public String name,phone,address,email,website,uid,status,display,password;
+	public long count,last_update;
 	
 	public FbQrProfile(){
 		
@@ -51,6 +52,7 @@ public class FbQrProfile {
 			display=obj.getProperty("display").toString();
 			if(display.equals("")) display=null;
 		}
+		count=-1;
 	}
 	
 	public String show(){

@@ -9,7 +9,7 @@ import android.util.Log;
 /** Helper to the database, manages versions and creation */
 public class EventDataSQLHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "fbqrdb.db";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 
 	// Table name
 	public static final String TABLE = "profiles";
@@ -25,6 +25,8 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 	public static final String WEBSITE = "website";
 	public static final String LAST_UPDATE = "last_update";
 	public static final String DISPLAY = "display";
+	public static final String PASSWORD = "password";
+	public static final String COUNT = "count";
 
 	public EventDataSQLHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,6 +43,8 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 				+ ADDRESS + " text," 
 				+ WEBSITE + " text," 		
 				+ DISPLAY + " text," 	
+				+ PASSWORD + " text," 
+				+ COUNT + " integer," 
 				+ LAST_UPDATE + " intege);";
 		Log.d("EventsData", "onCreate: " + sql);
 		db.execSQL(sql);

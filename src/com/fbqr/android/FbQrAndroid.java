@@ -91,7 +91,7 @@ public class FbQrAndroid extends Activity{
 	       button3.setOnClickListener(new OnClickListener() {
 	    	   public void onClick(View v) {
 	    		   Intent intent = new Intent(v.getContext(), FbQrContactlist.class); 
-	     		   startActivity(intent); 
+	    		   startActivity(intent); 
 			    }
 	        });   
 	       
@@ -101,7 +101,9 @@ public class FbQrAndroid extends Activity{
 	    		   else Toast.makeText(FbQrAndroid.this, "No Internet Connection...", Toast.LENGTH_LONG).show();
 			    }
 	        });    
+	       
 
+	       	
 	     }
 
 	   public boolean isOnline() {		   

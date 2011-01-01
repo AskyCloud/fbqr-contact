@@ -1,110 +1,221 @@
 package com.fbqr.android;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CheckedTextView;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class FbQrContactlist extends ListActivity {
 	/** Called when the activity is first created. */
 	FbQrDatabase db=new FbQrDatabase(this);
-	FbQrArrayAdapter adapList=null;
-	private int[] idx;
+	ArrayAdapter<ContactView>  adapList=null;
+	ArrayList<ContactView> contactList=null;
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Create an array of Strings, that will be put to our ListActivity
+		//UI
 		
+		setContentView(R.layout.contactlayout);
 		
+		//start activity code
      	Cursor cursor=db.getData();
-     	//String[] names = {"1","2","3","4"};
-     	//String[] displays = {"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs1319.snc4/161115_100001728618691_59195_q.jpg",
-     	//		"http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs427.ash2/70683_1515823225_105544_q.jpg","http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs335.snc4/41705_100000212124399_1244707_q.jpg"};
-     	String[] names = new String[cursor.getCount()];
-     	String[] uids = new String[cursor.getCount()];
-     	idx= new int[cursor.getCount()];
      	int i=0;
      	FbQrProfile profile;
-     	while (cursor.moveToNext()) {
-     		  profile=db.getProfile(cursor);
-     	      names[i]=profile.name;
-     	      idx[i]=cursor.getPosition();
-     	      uids[i++]=profile.uid;
-     	      //ret.append(title + "\n");
-     	      /*for(int i=0;i<9;i++){
-     	    	  String title = cursor.getString(i);
-     	    	  ret.append(title + "\n");
-     	      }*/
-     	    }
+     	contactList = new ArrayList<ContactView>();  
+     	while (cursor.moveToNext()) {     		  
+     		profile=db.getProfile(cursor);
+     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getPosition()));
+	    }
      	db.close();
-				 
-		// Use your own layout and point the adapter to the UI elements which contains the label
-     	this.setListAdapter(adapList=new FbQrArrayAdapter(this, names,uids));
+     	adapList=new FbQrArrayAdapter(this,contactList);
+     	this.setListAdapter(adapList);
+	}
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		  super.onActivityResult(requestCode, resultCode, data);
+		//start activity code
+		Cursor cursor=db.getData();
+     	int i=0;
+     	FbQrProfile profile;
+     	contactList = new ArrayList<ContactView>();  
+     	while (cursor.moveToNext()) {     		  
+     		profile=db.getProfile(cursor);
+     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getPosition()));
+	    }     
+     	db.close();
+     	adapList=new FbQrArrayAdapter(this,contactList);
+     	this.setListAdapter(adapList);
+     	adapList.notifyDataSetChanged();
 	}
 
 	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		
+	protected void onListItemClick(ListView l, View v, int position, long id) {		
 		super.onListItemClick(l, v, position, id);
 		// Get the item that was clicked
 		//Object o = this.getListAdapter().getItem(position);
-		FbQrProfile profile=db.getProfile(idx[position]);
-		//String keyword = profile.name;
-		//Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_LONG).show();
+		FbQrProfile profile=db.getProfile(contactList.get(position).getId());
 		if (profile.phone == null)	return;
+		profile.count++;
+		db.updateData(profile);
 		Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
-		FbQrContactlist.this.startActivity(intent);		
+		FbQrContactlist.this.startActivityForResult(intent,0);		
+		
 	}
 	
 
-	private static final int searchBtnId = Menu.FIRST;
-	private static final int updateBtnId = Menu.FIRST+1;
-	private static final int deleteBtnId = Menu.FIRST+2;
+	private static final int editBtnId = Menu.FIRST;
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		//menu.add(0,searchBtnId ,searchBtnId,"Search");
-		//menu.add(0,updateBtnId ,updateBtnId,"Update");
-		menu.add(0,deleteBtnId ,deleteBtnId,"Delete");
+		menu.add(0,editBtnId ,editBtnId,"Edit");
 	    return super.onCreateOptionsMenu(menu);
-
 	  }
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case searchBtnId:
-	    	Toast.makeText(this, "You selected: Search" , Toast.LENGTH_LONG).show();
-	        return true;
-	    case updateBtnId:
-	    	Toast.makeText(this, "You selected: Update", Toast.LENGTH_LONG).show();
-	        return true;
-	    case deleteBtnId:
-	    	/*int _size =this.getListView().getCount();
-	    	for (int i =0; i< _size; i++) {
-	    		if(adapList.del[i]){
-	    			db.deleteData(idx[i]);
-	    		}
-	    			    		
-	    	}*/
-	    	db.delete();	
-	    	adapList.notifyDataSetChanged ();
-	    	Toast.makeText(this, "You selected: Delete", Toast.LENGTH_LONG).show();
+	    case editBtnId:
+	    	Toast.makeText(this, "Edit" , Toast.LENGTH_LONG).show();
+	    	Intent intent = new Intent(this, FbQrContactlistEdit.class);
+	    	startActivityForResult(intent,1);		
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
+	
+	public static class FbQrArrayAdapter extends ArrayAdapter<ContactView> {
+		private final Activity context;
+		private final String PATH = "/data/data/com.fbqr.android/files/"; 
+		private LayoutInflater inflater;  		
+		private final List<ContactView> contactLists;
+		
+		public FbQrArrayAdapter(Activity context,List<ContactView> contactLists) {			
+			super(context, R.layout.rowlayout,contactLists);
+			inflater = LayoutInflater.from(context) ;
+			this.context=context;
+			this.contactLists=contactLists;
+		}
 
+		@Override
+		public View getView(final int position, View convertView, ViewGroup parent) {
+			final ContactView contact = contactLists.get(position);  
+		    
+		   convertView = inflater.inflate(R.layout.rowlayout, null); 
+		   
+		   TextView textView = (TextView) convertView.findViewById( R.id.label );  
+		   ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
+	       	
+	       File img=new File(PATH+contact.getUid()+".PNG");
+		   if(img.exists())
+		         imageView.setImageBitmap(BitmapFactory.decodeFile(img.getPath()));    
+
+		   convertView.setTag( new ViewHolder(textView,null) );        
+ 		        
+		    // Display planet data  
+  
+		    textView.setText( contact.getName() );        
+		        
+		    return convertView;  
+		  } 			
+	}
+	
+	protected static class ViewHolder{ 
+		public ImageView imageView;
+	    private CheckBox checkBox ;  
+	    private TextView label;  
+	    public ViewHolder() {}  
+	    public ViewHolder( TextView textView, CheckBox checkBox ) {  
+	      this.checkBox = checkBox ;  
+	      this.label = textView ;  
+	    }  
+	    public CheckBox getCheckBox() {  
+	      return checkBox;  
+	    }  
+	    public void setCheckBox(CheckBox checkBox) {  
+	      this.checkBox = checkBox;  
+	    }  
+	    public TextView getTextView() {  
+	      return label;  
+	    }  
+	    public void setTextView(TextView textView) {  
+	      this.label = textView;  
+	    }     
+	    
+	  }  
+	
+	protected static class ContactView {  
+	    private String name = "" ;  
+	    private String uid = "" ;  
+	    private int id;
+	    private boolean checked = false ;  
+	    public ContactView() {}  
+	    public ContactView( String name,String uid,int id ) {  
+	      this.name = name ;  
+	      this.uid = uid ; 
+	      this.id = id ; 
+	    }  
+	    public ContactView( String name, boolean checked ) {  
+	      this.name = name ;  
+	      this.checked = checked ;  
+	    }  
+	    public String getName() {  
+	      return name;  
+	    }  
+	    public void setName(String name) {  
+	      this.name = name;  
+	    }  
+	    public void setUid(String uid){
+	    	this.uid = uid;
+	    }
+	    public String getUid(){
+	    	return uid;
+	    }
+	    public void setId(int id){
+	    	this.id = id;
+	    }
+	    public int getId(){
+	    	return id;
+	    }
+	    public boolean isChecked() {  
+	      return checked;  
+	    }  
+	    public void setChecked(boolean checked) {  
+	      this.checked = checked;  
+	    }  
+	    public String toString() {  
+	      return name ;   
+	    }  
+	    public void toggleChecked() {  
+	      checked = !checked ;  
+	    }  
+	  }  
 }

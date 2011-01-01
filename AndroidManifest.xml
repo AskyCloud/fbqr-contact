@@ -16,14 +16,14 @@
 			<action android:name="android.intent.action.MAIN2" />
 			</intent-filter>
 		</activity>
-		 <activity android:name=".FbQrContact">
-		 	<intent-filter>
-			<action android:name="android.intent.action.MAIN3" />
-			</intent-filter>
-		 </activity>
 		 <activity android:name=".FbQrContactlist">
 		 	<intent-filter>
-			<action android:name="android.intent.action.MAIN3" />
+			<action android:name="android.intent.action.contactlayout" />
+			</intent-filter>
+		 </activity>
+		  <activity android:name=".FbQrContactlistEdit">
+		 	<intent-filter>
+			<action android:name="android.intent.action.contactlayout_edit" />
 			</intent-filter>
 		 </activity>
 	</application>
