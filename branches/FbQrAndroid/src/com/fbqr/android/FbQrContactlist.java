@@ -1,19 +1,35 @@
 package com.fbqr.android;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.facebook.android.AsyncFacebookRunner;
+import com.facebook.android.Facebook;
 
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,16 +52,20 @@ public class FbQrContactlist extends ListActivity {
 	FbQrDatabase db=new FbQrDatabase(this);
 	ArrayAdapter<ContactView>  adapList=null;
 	ArrayList<ContactView> contactList=null;
+	Bundle extras=null;
+	SOAPConnected mSoap = new SOAPConnected(FbQrContactlist.this);
+
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//UI
 		
+		extras = getIntent().getExtras(); 	       
+	    
+		//UI
 		setContentView(R.layout.contactlayout);
 		
 		//start activity code
      	Cursor cursor=db.getData();
-     	int i=0;
      	FbQrProfile profile;
      	contactList = new ArrayList<ContactView>();  
      	while (cursor.moveToNext()) {     		  
@@ -57,11 +77,46 @@ public class FbQrContactlist extends ListActivity {
      	this.setListAdapter(adapList);
 	}
 	
+	public void onResume(){
+		super.onResume();
+		reLoading();
+	}
+	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		  super.onActivityResult(requestCode, resultCode, data);
+		  if (requestCode == 2) { //login
+		  		if (resultCode == RESULT_OK) {
+		  			String MODE = data.getStringExtra("MODE");
+		  			if(isOnline()){
+			  			if(MODE.matches("getPhoneBook")){			  				
+					  			Toast.makeText(this, "Downloading PhoneBook", Toast.LENGTH_LONG).show();
+					  			mSoap.getPhoneBook(db.getAccessToken(),new getData());			  				
+			  			}
+		  			}else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
+		  		}else if(resultCode == RESULT_CANCELED){
+		  			if(data==null) return;
+		  			String msg=data.getStringExtra("Error");
+		  			Toast.makeText(this, msg, Toast.LENGTH_LONG).show();		  			
+		  		}
+		  }
+		  if (requestCode == 1) { //edit
+		  		if (resultCode == RESULT_OK) {
+		  			String mode=data.getStringExtra("MODE");
+		  			if(mode.matches("update")){
+		  				if(isOnline()){
+			  				String[] uids = data.getStringArrayExtra("uids");
+			  				if(uids.length>0)
+			  					mSoap.getFriendInfo(uids, db.getAccessToken(),new getData());
+		  				}else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
+		  			}
+		  			else reLoading();
+		  		}
+		  }
+	}
+	
+	private void reLoading(){		
 		//start activity code
 		Cursor cursor=db.getData();
-     	int i=0;
      	FbQrProfile profile;
      	contactList = new ArrayList<ContactView>();  
      	while (cursor.moveToNext()) {     		  
@@ -90,22 +145,45 @@ public class FbQrContactlist extends ListActivity {
 	
 
 	private static final int editBtnId = Menu.FIRST;
-
+	private static final int loginBtnId = Menu.FIRST+1;
+	private static final int logoutBtnId = Menu.FIRST+2;
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0,editBtnId ,editBtnId,"Edit");
+		if(db.getAccessToken()==null)
+			menu.add(0,loginBtnId ,loginBtnId,"Login");
+		else menu.add(0,logoutBtnId ,logoutBtnId,"Logout");
 	    return super.onCreateOptionsMenu(menu);
 	  }
+	
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu){
+		menu.removeItem(logoutBtnId);
+		menu.removeItem(loginBtnId);
+		if(db.getAccessToken()==null)
+			menu.add(0,loginBtnId ,loginBtnId,"Login");
+		else menu.add(0,logoutBtnId ,logoutBtnId,"Logout");
+	    return super.onPrepareOptionsMenu(menu);		
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
 	    // Handle item selection
+		Intent intent;
 	    switch (item.getItemId()) {
 	    case editBtnId:
-	    	Toast.makeText(this, "Edit" , Toast.LENGTH_LONG).show();
-	    	Intent intent = new Intent(this, FbQrContactlistEdit.class);
+	    	intent= new Intent(this, FbQrContactlistEdit.class);
 	    	startActivityForResult(intent,1);		
+	        return true;
+	    case loginBtnId:
+	    	intent = new Intent(this, FbQrBackground.class);
+	    	intent.putExtra("MODE", "login");
+	    	startActivityForResult(intent,2);
+	        return true;
+	    case logoutBtnId:
+	    	db.setAccessToken("");
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -218,4 +296,80 @@ public class FbQrContactlist extends ListActivity {
 	      checked = !checked ;  
 	    }  
 	  }  
+    
+	public boolean isOnline() {		   
+		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		    if (netInfo != null && netInfo.isConnectedOrConnecting()) return true;		    
+		    else return false;
+		}
+	
+	private class getData extends SoapConnectedListener{
+		@Override
+		public void onComplete(final ArrayList<FbQrProfile> response) {
+			// TODO Auto-generated method stub
+			try {
+				
+				FbQrContactlist.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                       FbQrProfile x;
+     				   for(int i=0;i<response.size();i++){
+     					   	if(response.get(i).phone!=null)
+     					   		db.addData(response.get(i));
+     					    x=response.get(i);
+     					    if(x.display!=null) saveDisplay(x.display,x.uid);
+     			       }
+     				   isDone();      
+     				   reLoading();
+                    }
+                });
+			 	
+			} catch (Exception e) {
+				Log.w("getData", e.toString());
+            } 
+		}	
+		private void isDone(){
+			Toast.makeText(FbQrContactlist.this, "Download Completed", Toast.LENGTH_LONG).show();
+		}
+   }
+   
+	private void saveDisplay(String fileUrl,String uid){
+		String PATH = "/data/data/com.fbqr.android/files/";  
+		
+		URL myFileUrl =null; 
+		Bitmap bmImg;
+		try {
+			myFileUrl= new URL(fileUrl);
+		} catch (MalformedURLException e) {		
+			e.printStackTrace();
+		}
+		try {
+			HttpURLConnection conn= (HttpURLConnection)myFileUrl.openConnection();
+			conn.setDoInput(true);
+			conn.connect();
+			//int length = conn.getContentLength();
+			//int[] bitmapData =new int[length];
+			//byte[] bitmapData2 =new byte[length];
+			InputStream is = conn.getInputStream();
+		
+			bmImg= BitmapFactory.decodeStream(is);
+			
+			OutputStream outStream = null;
+			File dir = new File(PATH);
+			dir.mkdirs();
+			File file = new File(PATH,uid+".PNG");
+			   
+			outStream = new FileOutputStream(file);
+			bmImg.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+			outStream.flush();
+			outStream.close();
+			   
+			//Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
 }

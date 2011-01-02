@@ -9,7 +9,7 @@ import android.util.Log;
 /** Helper to the database, manages versions and creation */
 public class EventDataSQLHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "fbqrdb.db";
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 13;
 
 	// Table name
 	public static final String TABLE = "profiles";
