@@ -6,7 +6,10 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -47,23 +50,42 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		    	        for (int i = 0; i < _size; i++) {
 		    	          boolean isChecked = contactList.get(i).isChecked();
 		    	          if(isChecked==true) db.deleteData(contactList.get(i).getUid());
-		    	        } 	 
+		    	        } 	 		    	        
 		    	        //adapList.notifyDataSetChanged();
-		    	        finish();
+		    	        Bundle stats = new Bundle();
+		    			Intent intent = new Intent();
+		    			stats.putString("MODE", "delete");
+		    			intent.putExtras(stats);
+		    			
+		    			setResult(RESULT_OK, intent);
+		    		    finish();
 				    }
 		        });
 			updateBtn.setOnClickListener(new OnClickListener() {
 		    	   public void onClick(View v) {  
+		    		   ArrayList<String> uidList=new ArrayList<String>();
+		    		   
 		    		   int _size = contactList.size() - 1;
+		    		   
 		    	        for (int i = 0; i < _size; i++) {
 		    	          boolean isChecked = contactList.get(i).isChecked();
 		    	          if (isChecked == true) {
-		    	        	  contactList.remove(i);
-		    	        	  db.deleteData(contactList.get(i).getUid());
-		    	        	  contactList.get(i).toggleChecked();
+		    	        	  uidList.add(contactList.get(i).getUid());
 		    	          }
 		    	        } 	 
-		    		   finish();
+		    	        
+		    	        String[] uids=new String[uidList.size()];
+		    	        for(int i=0;i<uidList.size();i++)
+		    	        	uids[i]=uidList.get(i);
+		    	        
+		    	        Bundle stats = new Bundle();
+		    			Intent intent = new Intent();
+		    			stats.putString("MODE","update");
+		    			stats.putStringArray("uids", uids);
+		    			intent.putExtras(stats);
+		    			
+		    			setResult(RESULT_OK, intent);
+		    		    finish();
 				    }
 		        });
 			
@@ -86,6 +108,11 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		@Override
 		protected void onListItemClick(ListView l, View v, int position, long id) {			
 			super.onListItemClick(l, v, position, id);			
+		}
+		
+		public boolean onPrepareOptionsMenu (Menu menu){
+			menu.close();		
+			return super.onPrepareOptionsMenu(menu);	
 		}
 		
 		public static class FbQrArrayAdapter extends ArrayAdapter<ContactView> {

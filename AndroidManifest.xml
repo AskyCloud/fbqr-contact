@@ -5,30 +5,37 @@
       android:versionName="1.0">
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".FbQrAndroid"
-                  android:label="@string/app_name">
+                  android:label="@string/app_name"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                
             </intent-filter>
         </activity>
-        <activity android:name=".FbQrBackground">
+        <activity android:name=".FbQrBackground" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 		<activity android:name=".FbQrWeb">
 			<intent-filter>
-			<action android:name="android.intent.action.MAIN2" />
+			<action android:name="android.intent.action.web" />
 			</intent-filter>
 		</activity>
-		 <activity android:name=".FbQrContactlist">
+		 <activity android:name=".FbQrContactlist" android:screenOrientation="portrait">
 		 	<intent-filter>
 			<action android:name="android.intent.action.contactlayout" />
 			</intent-filter>
 		 </activity>
-		  <activity android:name=".FbQrContactlistEdit">
+		  <activity android:name=".FbQrContactlistEdit" android:launchMode="singleTop" android:screenOrientation="portrait">
 		 	<intent-filter>
 			<action android:name="android.intent.action.contactlayout_edit" />
+			</intent-filter>
+		 </activity>
+		 <activity android:name=".FbQrIntro" android:screenOrientation="portrait">
+		 	<intent-filter>
+			<action android:name="android.intent.action.intro" />
 			</intent-filter>
 		 </activity>
 	</application>

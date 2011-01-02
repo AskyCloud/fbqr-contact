@@ -103,8 +103,8 @@ public class FbQrDatabase{
   public String getAccessToken(){
 	  SQLiteDatabase db = eventsData.getWritableDatabase();
 	  Cursor cursor = db.query(EventDataSQLHelper.cfgTABLE, null, null, null, null, null, null);
-	  if(!cursor.moveToFirst()) return null;
-	  return cursor.getString(1);
+	  if(!cursor.moveToFirst()) return null;	  
+	  return (cursor.getString(1).matches(""))?null:cursor.getString(1);
    }
    
  public FbQrProfile getProfile(Cursor cursor) {

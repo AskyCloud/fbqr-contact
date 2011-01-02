@@ -13,40 +13,31 @@ public final class R {
     public static final class drawable {
         public static final int facebook_icon=0x7f020000;
         public static final int icon=0x7f020001;
-        public static final int tab_one=0x7f020002;
-        public static final int tab_one_icon=0x7f020003;
-        public static final int tab_one_iconfaded=0x7f020004;
-        public static final int ui_01=0x7f020005;
-        public static final int ui_02=0x7f020006;
-        public static final int ui_03=0x7f020007;
-        public static final int ui_04=0x7f020008;
-        public static final int ui_05=0x7f020009;
-        public static final int ui_06=0x7f02000a;
-        public static final int ui_07=0x7f02000b;
-        public static final int ui_08=0x7f02000c;
-        public static final int ui_09=0x7f02000d;
-        public static final int ui_10=0x7f02000e;
+        public static final int login=0x7f020002;
+        public static final int logo=0x7f020003;
+        public static final int tab_one=0x7f020004;
+        public static final int tab_one_icon=0x7f020005;
+        public static final int tab_one_iconfaded=0x7f020006;
     }
     public static final class id {
-        public static final int CheckBox01=0x7f050006;
-        public static final int TextView01=0x7f050004;
+        public static final int CheckBox01=0x7f050007;
+        public static final int ImageView01=0x7f050002;
+        public static final int TextView01=0x7f050005;
         public static final int deleteBtn=0x7f050000;
-        public static final int icon=0x7f050003;
-        public static final int label=0x7f050005;
-        public static final int tabview1=0x7f050007;
-        public static final int tabview2=0x7f050008;
-        public static final int tabview3=0x7f050009;
+        public static final int icon=0x7f050004;
+        public static final int label=0x7f050006;
+        public static final int login=0x7f050003;
         public static final int updateBtn=0x7f050001;
-        public static final int webkit=0x7f050002;
+        public static final int webkit=0x7f050008;
     }
     public static final class layout {
         public static final int contactlayout=0x7f030000;
         public static final int contactlayout_edit=0x7f030001;
-        public static final int main=0x7f030002;
-        public static final int main2=0x7f030003;
+        public static final int intro=0x7f030002;
+        public static final int main=0x7f030003;
         public static final int rowlayout=0x7f030004;
         public static final int rowlayout_chkbox=0x7f030005;
-        public static final int tabhost=0x7f030006;
+        public static final int web=0x7f030006;
     }
     public static final class string {
         public static final int app_name=0x7f040001;

@@ -22,7 +22,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class SOAPConnected {
-			private ArrayList<FbQrProfile> profileList=new ArrayList();
+			private ArrayList<FbQrProfile> profileList=new ArrayList<FbQrProfile>();
 	        protected static final String TAG = "SOAPConnected";
 	        
 	        private static final String NAMESPACE = "urn:fbqrwsdl";
@@ -82,7 +82,7 @@ public class SOAPConnected {
 	        	final String method = "getFriendInfoBypass";
 	        	profileList.clear();
 	        	final SoapObject request = new SoapObject(NAMESPACE, method);	  
-	        	Vector<String> data = new Vector();
+	        	Vector<String> data = new Vector<String>();
 	        	data.addElement(uid);	
 	        	request.addProperty("uidFr", data);
 	        	request.addProperty("access_token", access_token);
@@ -104,7 +104,7 @@ public class SOAPConnected {
 	        	final String method = "getFriendInfo";
 	        	profileList.clear();
 	        	final SoapObject request = new SoapObject(NAMESPACE, method);
-	        	Vector<String> data = new Vector();
+	        	Vector<String> data = new Vector<String>();
 	        	for(String i:uid)
 	        		data.addElement(i);	        	    	
 	        	request.addProperty("uidFr", data);
@@ -134,7 +134,7 @@ public class SOAPConnected {
 		        	SoapObject resultsRequestSOAP = (SoapObject)envelope.bodyIn;
 		        	//SoapObject resultsRequestSOAP = (SoapObject)envelope.getResponse();
 		        	
-		        	Vector<SoapObject> XXXX = (Vector) resultsRequestSOAP.getProperty(0);
+		        	Vector<SoapObject> XXXX = (Vector<SoapObject>) resultsRequestSOAP.getProperty(0);
 		        			        	
 					for(int i=0;i<XXXX.size();i++)
 		        	    profileList.add(i,new FbQrProfile(XXXX.get(i)));
