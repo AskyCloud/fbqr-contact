@@ -49,11 +49,11 @@ import android.widget.Toast;
 
 public class FbQrContactlist extends ListActivity {
 	/** Called when the activity is first created. */
-	FbQrDatabase db=new FbQrDatabase(this);
-	ArrayAdapter<ContactView>  adapList=null;
-	ArrayList<ContactView> contactList=null;
-	Bundle extras=null;
-	SOAPConnected mSoap = new SOAPConnected(FbQrContactlist.this);
+	private FbQrDatabase db=new FbQrDatabase(this);
+	private ArrayAdapter<ContactView>  adapList=null;
+	private ArrayList<ContactView> contactList=null;
+	private Bundle extras=null;
+	private SOAPConnected mSoap = new SOAPConnected(FbQrContactlist.this);
 
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,7 @@ public class FbQrContactlist extends ListActivity {
      	contactList = new ArrayList<ContactView>();  
      	while (cursor.moveToNext()) {     		  
      		profile=db.getProfile(cursor);
-     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getPosition()));
+     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
 	    }
      	db.close();
      	adapList=new FbQrArrayAdapter(this,contactList);
@@ -79,7 +79,7 @@ public class FbQrContactlist extends ListActivity {
 	
 	public void onResume(){
 		super.onResume();
-		reLoading();
+		//reLoading();
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -121,7 +121,7 @@ public class FbQrContactlist extends ListActivity {
      	contactList = new ArrayList<ContactView>();  
      	while (cursor.moveToNext()) {     		  
      		profile=db.getProfile(cursor);
-     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getPosition()));
+     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
 	    }     
      	db.close();
      	adapList=new FbQrArrayAdapter(this,contactList);
@@ -132,24 +132,20 @@ public class FbQrContactlist extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {		
 		super.onListItemClick(l, v, position, id);
-		// Get the item that was clicked
-		//Object o = this.getListAdapter().getItem(position);
-		FbQrProfile profile=db.getProfile(contactList.get(position).getId());
-		if (profile.phone == null)	return;
-		profile.count++;
-		db.updateData(profile);
-		Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
-		FbQrContactlist.this.startActivityForResult(intent,0);		
+		Intent intent = new Intent(this, FbQrDisplayProfile.class);
+		intent.putExtra("ID", contactList.get(position).getId());
+		startActivityForResult(intent,4);
 		
 	}
 	
-
-	private static final int editBtnId = Menu.FIRST;
-	private static final int loginBtnId = Menu.FIRST+1;
-	private static final int logoutBtnId = Menu.FIRST+2;
+	private static final int refBtnId = Menu.FIRST;
+	private static final int editBtnId = Menu.FIRST+1;
+	private static final int loginBtnId = Menu.FIRST+2;
+	private static final int logoutBtnId = Menu.FIRST+3;
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0,refBtnId ,refBtnId,"Refresh");
 		menu.add(0,editBtnId ,editBtnId,"Edit");
 		if(db.getAccessToken()==null)
 			menu.add(0,loginBtnId ,loginBtnId,"Login");
@@ -173,6 +169,9 @@ public class FbQrContactlist extends ListActivity {
 	    // Handle item selection
 		Intent intent;
 	    switch (item.getItemId()) {
+	    case refBtnId:
+	    	reLoading();		
+	        return true;
 	    case editBtnId:
 	    	intent= new Intent(this, FbQrContactlistEdit.class);
 	    	startActivityForResult(intent,1);		
@@ -183,7 +182,7 @@ public class FbQrContactlist extends ListActivity {
 	    	startActivityForResult(intent,2);
 	        return true;
 	    case logoutBtnId:
-	    	db.setAccessToken("");
+	    	db.setAccessToken(null);
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -329,7 +328,7 @@ public class FbQrContactlist extends ListActivity {
             } 
 		}	
 		private void isDone(){
-			Toast.makeText(FbQrContactlist.this, "Download Completed", Toast.LENGTH_LONG).show();
+			Toast.makeText(FbQrContactlist.this,"Download Completed", Toast.LENGTH_LONG).show();
 		}
    }
    

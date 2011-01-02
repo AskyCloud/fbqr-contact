@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"  android:layout_width="fill_parent" android:layout_height="fill_parent"  android:gravity="center_vertical">
-	<ImageView android:id="@+id/ImageView01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_alignParentTop="true"></ImageView>
+	<TextView android:text="@+id/TextView01" android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 	<Button
-        android:id="@+id/login"
-        android:src="@drawable/login"
+        android:id="@+id/scanqr"
+       android:text="Barcode Scanner"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
         android:layout_margin="30dp"

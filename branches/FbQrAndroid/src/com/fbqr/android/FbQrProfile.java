@@ -12,10 +12,11 @@ public class FbQrProfile {
 	public long count,last_update;
 	
 	public FbQrProfile(){
-		
+		name=phone=address=email=website=uid=status=display=password=null;
 	}
 	
 	public FbQrProfile(SoapObject obj){
+			name=phone=address=email=website=uid=status=display=password=null;
 			set(obj);
 	}
 	
@@ -58,7 +59,7 @@ public class FbQrProfile {
 	public String show(){
 		String text;
 		//display=name+"\n"+phone+"\n"+address+"\n"+email+"\n"+website+"\n"+id+"\n"+status;
-		text=name+"\n"+display+"\n";
+		text=name+"\n"+phone+"\n";
 		return text;
 	}
 }

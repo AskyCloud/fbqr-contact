@@ -2,10 +2,10 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-<item android:drawable="@drawable/tab_one_icon"
+<item android:drawable="@drawable/profile_icon"
 
           android:state_selected="true" />
 
-<item android:drawable="@drawable/tab_one_iconfaded" />
+<item android:drawable="@drawable/profile_iconfade" />
 
 </selector>

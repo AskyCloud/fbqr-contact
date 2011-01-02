@@ -15,7 +15,7 @@
         </activity>
         <activity android:name=".FbQrBackground" android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.background" />
             </intent-filter>
         </activity>
 		<activity android:name=".FbQrWeb">
@@ -28,14 +28,14 @@
 			<action android:name="android.intent.action.contactlayout" />
 			</intent-filter>
 		 </activity>
-		  <activity android:name=".FbQrContactlistEdit" android:launchMode="singleTop" android:screenOrientation="portrait">
+		  <activity android:name=".FbQrContactlistEdit" android:screenOrientation="portrait">
 		 	<intent-filter>
 			<action android:name="android.intent.action.contactlayout_edit" />
 			</intent-filter>
 		 </activity>
-		 <activity android:name=".FbQrIntro" android:screenOrientation="portrait">
+		 <activity android:name=".FbQrDisplayProfile" android:screenOrientation="portrait">
 		 	<intent-filter>
-			<action android:name="android.intent.action.intro" />
+			<action android:name="android.intent.action.user" />
 			</intent-filter>
 		 </activity>
 	</application>
