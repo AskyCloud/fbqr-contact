@@ -34,15 +34,16 @@ public class FbQrDatabase{
    private ContentValues addValues(FbQrProfile data){
 	   ContentValues values = new ContentValues();
 	    values.put(EventDataSQLHelper.ADDRESS, data.address);
-	    values.put(EventDataSQLHelper.EMAIL, data.email);
+	    values.put(EventDataSQLHelper.EMAIL,data.email);
 	    values.put(EventDataSQLHelper.LAST_UPDATE,System.currentTimeMillis());
-	   if(data.count!=-1) values.put(EventDataSQLHelper.COUNT,data.count);
+	    if(data.count!=-1) values.put(EventDataSQLHelper.COUNT,data.count);
 	    values.put(EventDataSQLHelper.NAME, (data.name!=null)?data.name:data.phone);
 	    values.put(EventDataSQLHelper.PHONE, data.phone);
 	    values.put(EventDataSQLHelper.STATUS, data.status);
 	    values.put(EventDataSQLHelper.UID, data.uid);
 	    values.put(EventDataSQLHelper.WEBSITE, data.website);
 	    values.put(EventDataSQLHelper.DISPLAY, data.display);
+	    values.put(EventDataSQLHelper.PASSWORD, data.password);
 	    return values;
 	   
    }
@@ -57,7 +58,9 @@ public class FbQrDatabase{
   
   public boolean updateData(FbQrProfile data) {
 	  SQLiteDatabase db = eventsData.getWritableDatabase();
-	  return db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.UID+ "=" + data.uid, null)>0;
+	  if(data.uid==null||data.uid.matches(""))
+		  return db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.PHONE+ " = " + data.phone, null)>0;
+	  else return db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.UID+ " = " + data.uid, null)>0;
  }
   
   public boolean deleteData(String uid){
@@ -79,15 +82,15 @@ public class FbQrDatabase{
   
   public FbQrProfile getProfile(String uid) {
 	  SQLiteDatabase db = eventsData.getReadableDatabase();
-	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.UID+ "=" + uid, null, null, null, null);   
-	  //cursor.moveToPosition(id);
+	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.UID+ " = " + uid, null, null, null, null);   
+	  cursor.moveToFirst();
 	  return getProfile(cursor);
    }
   
   public FbQrProfile getProfile(int id) {
 	  SQLiteDatabase db = eventsData.getReadableDatabase();
-	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, null, null, null, null, null);
-	  cursor.moveToPosition(id);
+	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.ID+ " = " + id, null, null, null, null);
+	  cursor.moveToFirst();
 	  return getProfile(cursor);
    }
   
@@ -95,7 +98,7 @@ public class FbQrDatabase{
 	  SQLiteDatabase db = eventsData.getWritableDatabase();
 	  ContentValues values = new ContentValues();
 	    values.put(EventDataSQLHelper.ACCESS_TOKEN, access_token);
-	  Boolean update=db.update(EventDataSQLHelper.cfgTABLE, values, EventDataSQLHelper.ID+ "= 1", null)>0;
+	  Boolean update=db.update(EventDataSQLHelper.cfgTABLE, values, EventDataSQLHelper.ID+ " = 1", null)>0;
 	  if(update) return ;
 	  else db.insert(EventDataSQLHelper.cfgTABLE, null, values);  
    }
@@ -104,7 +107,7 @@ public class FbQrDatabase{
 	  SQLiteDatabase db = eventsData.getWritableDatabase();
 	  Cursor cursor = db.query(EventDataSQLHelper.cfgTABLE, null, null, null, null, null, null);
 	  if(!cursor.moveToFirst()) return null;	  
-	  return (cursor.getString(1).matches(""))?null:cursor.getString(1);
+	  return cursor.getString(1);
    }
    
  public FbQrProfile getProfile(Cursor cursor) {

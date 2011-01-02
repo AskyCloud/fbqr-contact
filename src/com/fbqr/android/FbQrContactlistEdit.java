@@ -30,10 +30,10 @@ import android.widget.Toast;
 
 public class FbQrContactlistEdit extends FbQrContactlist {
 		/** Called when the activity is first created. */
-		FbQrDatabase db=new FbQrDatabase(this);
-		ArrayAdapter<ContactView>  adapList=null;
-		ArrayList<ContactView> contactList=null;
-		Button delBtn,updateBtn;
+		private FbQrDatabase db=new FbQrDatabase(this);
+		private ArrayAdapter<ContactView>  adapList=null;
+		private ArrayList<ContactView> contactList=null;
+		private Button delBtn,updateBtn;
 		
 		
 		public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		    		    int _size = contactList.size();
 		    	        for (int i = 0; i < _size; i++) {
 		    	          boolean isChecked = contactList.get(i).isChecked();
-		    	          if(isChecked==true) db.deleteData(contactList.get(i).getUid());
+		    	          if(isChecked==true) db.deleteData(contactList.get(i).getId());
 		    	        } 	 		    	        
 		    	        //adapList.notifyDataSetChanged();
 		    	        Bundle stats = new Bundle();
@@ -97,7 +97,7 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 	     	contactList = new ArrayList<ContactView>();  
 	     	while (cursor.moveToNext()) {     		  
 	     		profile=db.getProfile(cursor);
-	     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getPosition()));
+	     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
 		    
 	     	}
 	     	db.close();

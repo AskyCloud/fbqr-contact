@@ -61,6 +61,8 @@ public class FbQrBackground extends Activity{
 		private ReadFbQR readQR=new ReadFbQR() ;
 		private SOAPConnected mSoap = new SOAPConnected(FbQrBackground.this);
 		private String MODE=null;
+		
+		private TextView tv=null;
 	   /** Called when the activity is first created. */
 	   @Override
 	   public void onCreate(Bundle savedInstanceState) {
@@ -77,9 +79,20 @@ public class FbQrBackground extends Activity{
 				 final boolean scanAvailable = isIntentAvailable(this,
 			        "com.google.zxing.client.android.SCAN");
 				 if(scanAvailable){
-					 Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-				        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-				        startActivityForResult(intent, 2);
+					 setContentView(R.layout.background);
+					 
+					 tv=(TextView)findViewById(R.id.TextView01);
+					 tv.setVisibility(TextView.INVISIBLE);
+					 Button scanqr=(Button)findViewById(R.id.scanqr);
+					 					 
+					 scanqr.setOnClickListener(new OnClickListener() {
+				    	   public void onClick(View v) {
+				    		   Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+						        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+						        startActivityForResult(intent, 2);
+						    }
+				        });
+					
 				 }else{
 					 Toast.makeText(FbQrBackground.this, "Barcode Scanner not installed", Toast.LENGTH_LONG).show();
 				 }
@@ -99,8 +112,8 @@ public class FbQrBackground extends Activity{
 			 }
 	       
 	   }
-		 public void onResume(){
-			 super.onResume();
+		 public void onStart(){
+			 super.onStart();
 
 		 }
 
@@ -119,43 +132,48 @@ public class FbQrBackground extends Activity{
                                 if (resultCode == RESULT_OK) {
                                 // Handle successful scan
                                         String contents = data.getStringExtra("SCAN_RESULT");                      
-                           
+          
                             readQR.read(contents);
-                            
                             //MultiQR
                             if(readQR.type.matches("multiqr_n")){                                       
                                 //add data to db
-                                for(int i=0;i<readQR.profileList.size();i++) {
-                                        if(readQR.profileList.get(i).phone!=null)
+                            	for(int i=0;i<readQR.profileList.size();i++) {
+                                		if(readQR.profileList.get(i).phone!=null){
                                                 db.addData(readQR.profileList.get(i));
+                                        }
                                 }
-                                if(isOnline()&&facebook.getAccessToken()!=null)
-                                        mSoap.getMulti(readQR.qrid, facebook.getAccessToken(),"",new getData());
+                            	db.close();
+                            	Toast.makeText(FbQrBackground.this, "Completed", Toast.LENGTH_LONG).show();
+                                if(isOnline()){
+                                	Toast.makeText(FbQrBackground.this, "Downloading", Toast.LENGTH_LONG).show();
+                                        mSoap.getMulti(readQR.qrid, db.getAccessToken(),"",new getData());
+                                }
+                                
                             }                       
                             else{
                                 //Reject unknow type QR
-                                if(readQR.profileList.size()<1) Toast.makeText(FbQrBackground.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
+                                if(readQR.profileList.isEmpty()) Toast.makeText(FbQrBackground.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
                                 else{
                                         //add data to db
                                         for(int i=0;i<readQR.profileList.size();i++) {
                                                 if(readQR.profileList.get(i).phone!=null)
                                                         db.addData(readQR.profileList.get(i));
-                                        }                                                       
+                                        }        
+                                        db.close();
                                         //FbQr type     
                                         if(readQR.profileList.get(0).uid!=null){
-                                                if(isOnline()&&facebook.getAccessToken()!=null){
-                                        
+                                                if(isOnline()){                                        
                                                         String[] uids=new String[readQR.profileList.size()];
                                                         for(int i=0;i<readQR.profileList.size();i++)
                                                                 uids[i]=readQR.profileList.get(i).uid;
-                                                        mSoap.getFriendInfo(uids, facebook.getAccessToken(),new getData());
-                                                                                                
+                                                        Toast.makeText(FbQrBackground.this, "Downloading", Toast.LENGTH_LONG).show();
+                                                        mSoap.getFriendInfo(uids, db.getAccessToken(),new getData());
                                                 }
                                         }
+                                        Toast.makeText(FbQrBackground.this, "Completed", Toast.LENGTH_LONG).show();
                                 }
                             }                       
                 } else if (resultCode == RESULT_CANCELED) {
-                    // Handle cancel
                 }
            }                          
 	   }
@@ -241,20 +259,20 @@ public class FbQrBackground extends Activity{
 		public class getData extends SoapConnectedListener{
             @Override
             public void onComplete(final ArrayList<FbQrProfile> response) {
-                    // TODO Auto-generated method stub
+                    // TODO Auto-generated method stub\
+            	
                     try {
                             
                             FbQrBackground.this.runOnUiThread(new Runnable() {
-                public void run() {
-                   FbQrProfile x;
-                               String display=""+response.size();
+				                public void run() {
+				                   FbQrProfile x;
                                for(int i=0;i<response.size();i++){
-                                            if(response.get(i).phone!=null)
-                                                    db.addData(response.get(i));
-                                        x=response.get(i);
-                                        if(x.display!=null) saveDisplay(x.display,x.uid);
+                            	   x=response.get(i);
+                                   if(x.phone!=null) db.addData(x);                                       
+                                   if(x.display!=null&&x.uid!=null) saveDisplay(x.display,x.uid);
                                     //display+=x.show()+"\n";
-                           }
+                               }
+                               db.close();
                                isDone();
                                //tv.setText(display);                          
                 }
