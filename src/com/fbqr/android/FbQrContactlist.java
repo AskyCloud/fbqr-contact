@@ -62,8 +62,8 @@ public class FbQrContactlist extends ListActivity {
 		extras = getIntent().getExtras(); 	       
 	    
 		//UI
-		setContentView(R.layout.contactlayout);
-		
+		setContentView(R.layout.contactlayout);		
+    
 		//start activity code
      	Cursor cursor=db.getData();
      	FbQrProfile profile;
@@ -77,9 +77,9 @@ public class FbQrContactlist extends ListActivity {
      	this.setListAdapter(adapList);
 	}
 	
-	public void onResume(){
-		super.onResume();
-		//reLoading();
+	public void onStart(){
+		super.onStart();
+		reLoading();
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -92,7 +92,7 @@ public class FbQrContactlist extends ListActivity {
 					  			Toast.makeText(this, "Downloading PhoneBook", Toast.LENGTH_LONG).show();
 					  			mSoap.getPhoneBook(db.getAccessToken(),new getData());			  				
 			  			}
-		  			}else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
+		  			}
 		  		}else if(resultCode == RESULT_CANCELED){
 		  			if(data==null) return;
 		  			String msg=data.getStringExtra("Error");
@@ -107,7 +107,7 @@ public class FbQrContactlist extends ListActivity {
 			  				String[] uids = data.getStringArrayExtra("uids");
 			  				if(uids.length>0)
 			  					mSoap.getFriendInfo(uids, db.getAccessToken(),new getData());
-		  				}else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
+		  				}
 		  			}
 		  			else reLoading();
 		  		}
@@ -138,14 +138,12 @@ public class FbQrContactlist extends ListActivity {
 		
 	}
 	
-	private static final int refBtnId = Menu.FIRST;
-	private static final int editBtnId = Menu.FIRST+1;
-	private static final int loginBtnId = Menu.FIRST+2;
-	private static final int logoutBtnId = Menu.FIRST+3;
+	private static final int editBtnId = Menu.FIRST;
+	private static final int loginBtnId = Menu.FIRST+1;
+	private static final int logoutBtnId = Menu.FIRST+2;
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0,refBtnId ,refBtnId,"Refresh");
 		menu.add(0,editBtnId ,editBtnId,"Edit");
 		if(db.getAccessToken()==null)
 			menu.add(0,loginBtnId ,loginBtnId,"Login");
@@ -169,9 +167,6 @@ public class FbQrContactlist extends ListActivity {
 	    // Handle item selection
 		Intent intent;
 	    switch (item.getItemId()) {
-	    case refBtnId:
-	    	reLoading();		
-	        return true;
 	    case editBtnId:
 	    	intent= new Intent(this, FbQrContactlistEdit.class);
 	    	startActivityForResult(intent,1);		
@@ -296,11 +291,21 @@ public class FbQrContactlist extends ListActivity {
 	    }  
 	  }  
     
-	public boolean isOnline() {		   
+	   public boolean isOnline() {		   
 		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		    if (netInfo != null && netInfo.isConnectedOrConnecting()) return true;		    
-		    else return false;
+		    if (netInfo != null && netInfo.isConnectedOrConnecting()){
+		    	if(db.getAccessToken()!=null)
+		    		return true;
+		    	else{
+		    		Toast.makeText(this, "Please Login", Toast.LENGTH_LONG).show();
+		    		return false;
+		    	}
+		    }
+		    else {
+		    	Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
+		    	return false;
+		    }
 		}
 	
 	private class getData extends SoapConnectedListener{
@@ -369,6 +374,4 @@ public class FbQrContactlist extends ListActivity {
 			e.printStackTrace();
 		}
 	}
-
-
 }

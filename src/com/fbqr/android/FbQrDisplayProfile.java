@@ -23,6 +23,9 @@ public class FbQrDisplayProfile extends Activity{
 	private Bundle extras=null;
 	private FbQrDatabase db=new FbQrDatabase(this);
 	private int id;
+	
+	private FbQrProfile profile=null;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
@@ -30,7 +33,7 @@ public class FbQrDisplayProfile extends Activity{
 		extras = getIntent().getExtras(); 	       
 		if(extras !=null)  id= extras.getInt("ID");
 		
-		final FbQrProfile profile=db.getProfile(id);
+		profile=db.getProfile(id);
 		
 		//UI
 		setContentView(R.layout.user);
@@ -63,41 +66,50 @@ public class FbQrDisplayProfile extends Activity{
 	    if(profile.name==null){
 	    	bUser_name.setVisibility(Button.INVISIBLE);
 	    }
-		else bUser_name.setText(profile.name);
+		else bUser_name.setText("Call :"+profile.name);
 	    if(profile.status==null){
-	    	statBtn.setVisibility(Button.INVISIBLE);
-	    	bUser_stat.setVisibility(Button.INVISIBLE);
+	    	//statBtn.setVisibility(Button.INVISIBLE);
+	    	//bUser_stat.setVisibility(Button.INVISIBLE);
 	    }
 		else bUser_stat.setText(profile.status);
 	    if(profile.phone==null) {
-	    	phoneBtn.setVisibility(Button.INVISIBLE);
-	    	bUser_phone.setVisibility(Button.INVISIBLE);
+	    	//phoneBtn.setVisibility(Button.INVISIBLE);
+	    	//bUser_phone.setVisibility(Button.INVISIBLE);
 	    }
 		else bUser_phone.setText(profile.phone);
 	    if(profile.email==null) {
-	    	emailBtn.setVisibility(Button.INVISIBLE);
-	    	bUser_email.setVisibility(Button.INVISIBLE);
+	    	//emailBtn.setVisibility(Button.INVISIBLE);
+	    	//bUser_email.setVisibility(Button.INVISIBLE);
 	    }
 		else bUser_email.setText(profile.email);
 	    if(profile.website==null){
-	    	websiteBtn.setVisibility(Button.INVISIBLE);
-	    	bUser_website.setVisibility(Button.INVISIBLE);
+	    	//websiteBtn.setVisibility(Button.INVISIBLE);
+	    	//bUser_website.setVisibility(Button.INVISIBLE);
 	    }
 		else bUser_website.setText(profile.website);
 	    if(profile.address==null){
-	    	adsBtn.setVisibility(Button.INVISIBLE);
-	    	bUser_address.setVisibility(Button.INVISIBLE);
+	    	//adsBtn.setVisibility(Button.INVISIBLE);
+	    	//bUser_address.setVisibility(Button.INVISIBLE);
 	    }
 		else bUser_address.setText(profile.address);
 		
 		bUser_phone.setOnClickListener(new OnClickListener() {
 	    	   public void onClick(View v) {		    		   
-	    		   	if (profile.phone == null)	return;
-	    			profile.count++;
-	    			db.updateData(profile);
-	    			Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
-	    			FbQrDisplayProfile.this.startActivityForResult(intent,3);
+	    		   Call();
 	    	   }} 	
 	    );
+		bUser_name.setOnClickListener(new OnClickListener() {
+	    	   public void onClick(View v) {		    		   
+	    		   Call();
+	    	   }} 	
+	    );
+	}
+	
+	void Call(){
+		if (profile.phone == null)	return;
+			profile.count++;
+			db.updateData(profile);
+			Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
+			FbQrDisplayProfile.this.startActivityForResult(intent,3);		
 	}
 }

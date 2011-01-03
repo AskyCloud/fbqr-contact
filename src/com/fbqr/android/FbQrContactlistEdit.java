@@ -33,8 +33,8 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		private FbQrDatabase db=new FbQrDatabase(this);
 		private ArrayAdapter<ContactView>  adapList=null;
 		private ArrayList<ContactView> contactList=null;
-		private Button delBtn,updateBtn;
-		
+		private Button delBtn,updateBtn,slectBtn;
+		private static boolean isSelectAll = false;
 		
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
@@ -43,6 +43,28 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 			setContentView(R.layout.contactlayout_edit);
 			delBtn = (Button) findViewById(R.id.deleteBtn);
 			updateBtn = (Button) findViewById(R.id.updateBtn);
+			slectBtn = (Button) findViewById(R.id.selectBtn);
+			
+			slectBtn.setOnClickListener(new OnClickListener() {
+		    	   public void onClick(View v) {		
+		    		   int _size = contactList.size();
+		    		   if(isSelectAll){		   		    	
+			    	        for (int i = 0; i < _size; i++) {
+			    	        	contactList.get(i).setChecked(false);
+			    	        } 
+			    	        isSelectAll=true;
+			    	        slectBtn.setText("Select All");
+		    		   }else{		    			   
+			    	        for (int i = 0; i < _size; i++) {
+			    	        	contactList.get(i).setChecked(true);
+			    	        } 
+			    	        isSelectAll=false;
+			    	        slectBtn.setText("unSelect All");
+		    		   }
+		    		   adapList.notifyDataSetChanged();
+		    		   setListAdapter(adapList);
+				    }
+		        });
 			
 			delBtn.setOnClickListener(new OnClickListener() {
 		    	   public void onClick(View v) {		    		   
@@ -87,12 +109,13 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		    			setResult(RESULT_OK, intent);
 		    		    finish();
 				    }
-		        });
-			
-			
+		        });			
+		}
+	
+		public void onStart(){
+			super.onStart();
 			//start activity code
 	     	Cursor cursor=db.getData();
-	     	int i=0;
 	     	FbQrProfile profile;
 	     	contactList = new ArrayList<ContactView>();  
 	     	while (cursor.moveToNext()) {     		  
@@ -101,27 +124,22 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		    
 	     	}
 	     	db.close();
-	     	adapList=new FbQrArrayAdapter(this,contactList);
+	     	adapList=new FbQrArrayAdapterEdit(this,contactList);
 	     	this.setListAdapter(adapList);
 		}
-	
+		
 		@Override
 		protected void onListItemClick(ListView l, View v, int position, long id) {			
 			super.onListItemClick(l, v, position, id);			
 		}
 		
-		public boolean onPrepareOptionsMenu (Menu menu){
-			menu.close();		
-			return super.onPrepareOptionsMenu(menu);	
-		}
-		
-		public static class FbQrArrayAdapter extends ArrayAdapter<ContactView> {
+		public static class FbQrArrayAdapterEdit extends ArrayAdapter<ContactView> {
 			private final Activity context;
 			private final String PATH = "/data/data/com.fbqr.android/files/"; 
 			private LayoutInflater inflater;  		
 			private final List<ContactView> contactLists;
 			
-			public FbQrArrayAdapter(Activity context,List<ContactView> contactLists) {			
+			public FbQrArrayAdapterEdit(Activity context,List<ContactView> contactLists) {			
 				super(context, R.layout.rowlayout,contactLists);
 				inflater = LayoutInflater.from(context) ;
 				this.context=context;

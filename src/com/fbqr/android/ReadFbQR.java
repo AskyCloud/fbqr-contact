@@ -32,10 +32,10 @@ public class ReadFbQR{
 			/*if(qrtext.startsWith("tel:")) addSingledata(qrtext,"tel:","phone");
 			else if(qrtext.startsWith("mailto:")) addSingledata(qrtext,"mailto:","email");
 				else if(qrtext.startsWith("http://")) addSingledata(qrtext,"http://","website");		
-					else {
+					else {*/
 						type="etc";
 						this.qrtext=qrtext;
-					}
+					/*}
 			*/
 		}
 	}
