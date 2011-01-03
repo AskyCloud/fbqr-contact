@@ -120,8 +120,18 @@ public class FbQrBackground extends Activity{
 	   public boolean isOnline() {		   
 		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		    if (netInfo != null && netInfo.isConnectedOrConnecting()) return true;		    
-		    else return false;
+		    if (netInfo != null && netInfo.isConnectedOrConnecting()){
+		    	if(db.getAccessToken()!=null)
+		    		return true;
+		    	else{
+		    		Toast.makeText(this, "Please Login", Toast.LENGTH_LONG).show();
+		    		return false;
+		    	}
+		    }
+		    else {
+		    	Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
+		    	return false;
+		    }
 		}
 	   
 	   public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -152,7 +162,7 @@ public class FbQrBackground extends Activity{
                             }                       
                             else{
                                 //Reject unknow type QR
-                                if(readQR.profileList.isEmpty()) Toast.makeText(FbQrBackground.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
+                                if(readQR.type.matches("etc")) Toast.makeText(FbQrBackground.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
                                 else{
                                         //add data to db
                                         for(int i=0;i<readQR.profileList.size();i++) {

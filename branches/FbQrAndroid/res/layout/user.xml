@@ -10,15 +10,15 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 android:id="@+id/widget56"
 android:layout_height="wrap_content"
 android:orientation="horizontal" android:layout_width="fill_parent">
-<ImageView
-android:layout_width="100px" layout_height="100px"
-android:id="@+id/user_pic" android:background="@drawable/icon">
-</ImageView>
-<Button
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:id="@+id/user_name" android:text="name">
-</Button>
+	<ImageView
+	android:layout_width="100px" layout_height="100px"
+	android:id="@+id/user_pic" android:src="@drawable/icon">
+	</ImageView>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/user_name" android:text="Call">
+		</Button>
 </TableRow>
 <TableRow
 android:id="@+id/widget58"
