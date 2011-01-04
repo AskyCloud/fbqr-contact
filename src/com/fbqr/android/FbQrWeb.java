@@ -12,21 +12,31 @@ import android.widget.Toast;
 public class FbQrWeb extends Activity{
 	private String access_token;
 	WebView browser;
-	FbQrDatabase db=new FbQrDatabase(this);
+	FbQrDatabase db=null;
+	
 	 public void onCreate(Bundle savedInstanceState){
 		 super.onCreate(savedInstanceState);		 
 		 setContentView(R.layout.web);
 		 browser=(WebView)findViewById(R.id.webkit);
-		 browser.setBackgroundColor(color.black);
+		 //browser.setBackgroundColor(color.white);
 	 }
+	 
 	 public void onResume(){
 		 super.onResume();
+		 db=new FbQrDatabase(this);
 		 if(isOnline()){
+			 Toast.makeText(this, "Loading", Toast.LENGTH_LONG).show();
+			 //browser.setBackgroundColor(color.white);
 			 access_token=db.getAccessToken();
 			 String URL="http://fbqr.tkroputa.in.th/a/"+"index.php?access_token="+access_token;
 			 browser.loadUrl(URL);
 			 browser.getSettings().setJavaScriptEnabled(true);
-		 }
+		 }//else browser.setBackgroundColor(color.black);
+	 }
+	 
+	 public void onPause(){
+		 super.onPause();
+		 db.close();
 	 }
 	 
 	   public boolean isOnline() {		   

@@ -3,14 +3,23 @@ package com.fbqr.android;
 import java.io.File;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class FbQrDisplayProfile extends Activity{
 
@@ -21,7 +30,7 @@ public class FbQrDisplayProfile extends Activity{
 	ImageView ivUser_pic;
 	private final String PATH = "/data/data/com.fbqr.android/files/"; 
 	private Bundle extras=null;
-	private FbQrDatabase db=new FbQrDatabase(this);
+	private FbQrDatabase db=null;
 	private int id;
 	
 	private FbQrProfile profile=null;
@@ -32,7 +41,7 @@ public class FbQrDisplayProfile extends Activity{
 		
 		extras = getIntent().getExtras(); 	       
 		if(extras !=null)  id= extras.getInt("ID");
-		
+		db=new FbQrDatabase(this);	
 		profile=db.getProfile(id);
 		
 		//UI
@@ -103,7 +112,23 @@ public class FbQrDisplayProfile extends Activity{
 	    		   Call();
 	    	   }} 	
 	    );
+		db.close();
 	}
+	
+	public void onStart(){
+		super.onStart();
+		db=new FbQrDatabase(this);		
+	}
+	
+	public void onResume(){
+		super.onResume();
+		db=new FbQrDatabase(this);
+	}
+	
+	 public void onPause(){
+		 super.onPause();
+		 db.close();
+	 }
 	
 	void Call(){
 		if (profile.phone == null)	return;
@@ -112,4 +137,72 @@ public class FbQrDisplayProfile extends Activity{
 			Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+profile.phone));		     
 			FbQrDisplayProfile.this.startActivityForResult(intent,3);		
 	}
+	
+	
+	private static final int pwdBtnId = Menu.FIRST;
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0,pwdBtnId ,pwdBtnId,"Password");
+	    return super.onCreateOptionsMenu(menu);
+	  }
+	
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu){
+	    return super.onPrepareOptionsMenu(menu);		
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+	    // Handle item selection
+		
+	    switch (item.getItemId()) {
+	    case pwdBtnId:
+	    	showAddDialog(); 
+	    	Toast.makeText(getBaseContext(), "Test", Toast.LENGTH_LONG) 
+	    	.show(); 
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	private void showAddDialog() { 
+
+		final String TAG = "pwd"; 
+		final Dialog dialog = new Dialog(this); 
+		dialog.getWindow().setFlags( 
+		WindowManager.LayoutParams.FLAG_BLUR_BEHIND, 
+		WindowManager.LayoutParams.FLAG_BLUR_BEHIND); 
+		dialog.setTitle("Add Password"); 
+
+		LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
+		View dialogView = li.inflate(R.layout.dialog, null); 
+		dialog.setContentView(dialogView); 
+
+		dialog.show(); 
+		TextView tv = (TextView) dialogView.findViewById(R.id.textview_dialog); 
+		final EditText textbox = (EditText) dialogView.findViewById(R.id.textbox_dialog);
+		Button addButton = (Button) dialogView.findViewById(R.id.sumbit_button); 
+		Button cancelButton = (Button) dialogView.findViewById(R.id.cancel_button); 
+
+		tv.setText("Password for Update");
+		
+		addButton.setOnClickListener(new OnClickListener() { 
+			// @Override 
+			public void onClick(View v) { 
+				profile.password=textbox.getText().toString();
+				db.updateData(profile);
+				dialog.dismiss(); 
+			} 
+		}); 
+
+		cancelButton.setOnClickListener(new OnClickListener() { 
+			// @Override 
+			public void onClick(View v) { 
+				dialog.dismiss(); 
+			} 
+		}); 
+	} 
 }

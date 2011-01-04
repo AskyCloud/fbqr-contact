@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -34,10 +35,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Contacts.People;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
@@ -48,6 +52,7 @@ import android.widget.Toast;
 
 import com.facebook.android.*;
 import com.facebook.android.Facebook.DialogListener;
+import com.fbqr.android.FbQrContactlist.ContactView;
 
 public class FbQrBackground extends Activity{
 		public static final String APP_ID = "146472442045328";
@@ -57,10 +62,11 @@ public class FbQrBackground extends Activity{
 		private String[] req_perm=new String[]{"offline_access","email","user_status","user_website","user_birthday","user_location","user_hometown","publish_stream",
 				"friends_birthday","friends_status","friends_hometown","friends_location","friends_website"};
 		
-		private FbQrDatabase db=new FbQrDatabase(this);
+		private FbQrDatabase db=null;
 		private ReadFbQR readQR=new ReadFbQR() ;
 		private SOAPConnected mSoap = new SOAPConnected(FbQrBackground.this);
 		private String MODE=null;
+		private String multiqr_password=null;
 		
 		private TextView tv=null;
 	   /** Called when the activity is first created. */
@@ -74,8 +80,7 @@ public class FbQrBackground extends Activity{
 	       
 	       Bundle extras = getIntent().getExtras(); 	       
 	       if(extras !=null)  MODE= extras.getString("MODE");
-	       
-			 if(MODE.matches("READQR")){
+	       	 if(MODE.matches("READQR")){
 				 final boolean scanAvailable = isIntentAvailable(this,
 			        "com.google.zxing.client.android.SCAN");
 				 if(scanAvailable){
@@ -99,39 +104,50 @@ public class FbQrBackground extends Activity{
 			 }
 			 else if(MODE.matches("login")){
 					 if(isOnline()){
+						 	db=new FbQrDatabase(this);
 				    	   facebook.setAccessToken(db.getAccessToken());
 				    	   mAsyncRunner.request("me", new TokenRequestListener());
-				     }else{
-						   Bundle stats = new Bundle();
-						   Intent intent = new Intent();
-						   stats.putString("Error", "No Internet Connection");
-					       intent.putExtras(stats);
-				           setResult(RESULT_CANCELED, intent);
-				           finish();
-				     }				 
-			 }
-	       
+				    	   db.close();
+				     }			 
+			 }		 
 	   }
+	   
 		 public void onStart(){
 			 super.onStart();
-
+			 db=new FbQrDatabase(this);
+		 }
+		 
+		 public void onResume(){
+			 super.onResume();
+			 db=new FbQrDatabase(this);
+		 }
+		 
+		 public void onPause(){
+			 super.onPause();
+			 db.close();
 		 }
 
-	   public boolean isOnline() {		   
+	   public boolean isOnline() {	
 		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		    db=new FbQrDatabase(this);
+		    String AccessToken=db.getAccessToken();
+		    db.close();
 		    if (netInfo != null && netInfo.isConnectedOrConnecting()){
-		    	if(db.getAccessToken()!=null)
+		    	if(AccessToken!=null||MODE.matches("login")){		    		
 		    		return true;
+		    	}
 		    	else{
-		    		Toast.makeText(this, "Please Login", Toast.LENGTH_LONG).show();
+		    		//Toast.makeText(this, "Please Login", Toast.LENGTH_LONG).show();
 		    		return false;
 		    	}
 		    }
 		    else {
-		    	Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
+		    	//Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
 		    	return false;
 		    }
+		   
+		    
 		}
 	   
 	   public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -139,37 +155,37 @@ public class FbQrBackground extends Activity{
 		  facebook.authorizeCallback(requestCode, resultCode, data);
 		//Result of QRscan
           if (requestCode == 2) {
-                                if (resultCode == RESULT_OK) {
+
+                            if (resultCode == RESULT_OK) {
+        	  				
                                 // Handle successful scan
-                                        String contents = data.getStringExtra("SCAN_RESULT");                      
-          
+                                       
+                            String contents = data.getStringExtra("SCAN_RESULT"); 
+        	            
                             readQR.read(contents);
+                            //Reject unknow type QR
+                            if(readQR.type.matches("etc")) Toast.makeText(FbQrBackground.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
                             //MultiQR
                             if(readQR.type.matches("multiqr_n")){                                       
                                 //add data to db
-                            	for(int i=0;i<readQR.profileList.size();i++) {
-                                		if(readQR.profileList.get(i).phone!=null){
-                                                db.addData(readQR.profileList.get(i));
-                                        }
-                                }
-                            	db.close();
+                            	for(int i=0;i<readQR.profileList.size();i++)                             		
+                            		db.addData(readQR.profileList.get(i));
                             	Toast.makeText(FbQrBackground.this, "Completed", Toast.LENGTH_LONG).show();
                                 if(isOnline()){
-                                	Toast.makeText(FbQrBackground.this, "Downloading", Toast.LENGTH_LONG).show();
                                         mSoap.getMulti(readQR.qrid, db.getAccessToken(),"",new getData());
-                                }
-                                
-                            }                       
+                                }                                
+                            }                   
                             else{
-                                //Reject unknow type QR
-                                if(readQR.type.matches("etc")) Toast.makeText(FbQrBackground.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
+                            	if(readQR.type.matches("multiqr_p")){   
+                            		if(isOnline()){
+                            			showAddDialog();                                        
+                            		}else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();      
+                            	}
                                 else{
-                                        //add data to db
-                                        for(int i=0;i<readQR.profileList.size();i++) {
-                                                if(readQR.profileList.get(i).phone!=null)
-                                                        db.addData(readQR.profileList.get(i));
-                                        }        
-                                        db.close();
+                                    //add data to db
+                                	if(readQR.type.matches("single")){
+                                		for(int i=0;i<readQR.profileList.size();i++)                             		
+                                			db.addData(readQR.profileList.get(i));     
                                         //FbQr type     
                                         if(readQR.profileList.get(0).uid!=null){
                                                 if(isOnline()){                                        
@@ -181,11 +197,12 @@ public class FbQrBackground extends Activity{
                                                 }
                                         }
                                         Toast.makeText(FbQrBackground.this, "Completed", Toast.LENGTH_LONG).show();
+                                	}
                                 }
-                            }                       
-                } else if (resultCode == RESULT_CANCELED) {
-                }
-           }                          
+                           }                       
+               } else if (resultCode == RESULT_CANCELED) {
+               }
+           }        
 	   }
 	   
 	   private class AuthorizeListener implements DialogListener {
@@ -278,11 +295,11 @@ public class FbQrBackground extends Activity{
 				                   FbQrProfile x;
                                for(int i=0;i<response.size();i++){
                             	   x=response.get(i);
-                                   if(x.phone!=null) db.addData(x);                                       
-                                   if(x.display!=null&&x.uid!=null) saveDisplay(x.display,x.uid);
+                                   db.addData(x);                                       
+                                   saveDisplay(x.display,x.uid);
                                     //display+=x.show()+"\n";
                                }
-                               db.close();
+                               //db.close();
                                isDone();
                                //tv.setText(display);                          
                 }
@@ -302,6 +319,7 @@ public class FbQrBackground extends Activity{
             
             URL myFileUrl =null; 
             Bitmap bmImg;
+            if(fileUrl==null||uid==null) return;
             try {
                     myFileUrl= new URL(fileUrl);
             } catch (MalformedURLException e) {             
@@ -334,4 +352,42 @@ public class FbQrBackground extends Activity{
                     e.printStackTrace();
             }
     }
+		
+		private void showAddDialog() { 
+
+			final String TAG = "pwd"; 
+			final Dialog dialog = new Dialog(this); 
+			dialog.getWindow().setFlags( 
+			WindowManager.LayoutParams.FLAG_BLUR_BEHIND, 
+			WindowManager.LayoutParams.FLAG_BLUR_BEHIND); 
+			dialog.setTitle("Add Password"); 
+
+			LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
+			View dialogView = li.inflate(R.layout.dialog, null); 
+			dialog.setContentView(dialogView); 
+
+			dialog.show(); 
+			TextView tv = (TextView) dialogView.findViewById(R.id.textview_dialog); 
+			final EditText textbox = (EditText) dialogView.findViewById(R.id.textbox_dialog);
+			Button addButton = (Button) dialogView.findViewById(R.id.sumbit_button); 
+			Button cancelButton = (Button) dialogView.findViewById(R.id.cancel_button); 
+
+			tv.setText("Password for Update");
+			
+			addButton.setOnClickListener(new OnClickListener() { 
+				// @Override 
+				public void onClick(View v) { 
+					multiqr_password=textbox.getText().toString();
+					mSoap.getMulti(readQR.qrid, db.getAccessToken(),multiqr_password,new getData());
+					dialog.dismiss(); 
+				} 
+			}); 
+
+			cancelButton.setOnClickListener(new OnClickListener() { 
+				// @Override 
+				public void onClick(View v) { 
+					dialog.dismiss(); 
+				} 
+			}); 
+		} 
 }

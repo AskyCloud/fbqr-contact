@@ -11,7 +11,7 @@ android:id="@+id/widget56"
 android:layout_height="wrap_content"
 android:orientation="horizontal" android:layout_width="fill_parent">
 	<ImageView
-	android:layout_width="100px" layout_height="100px"
+	android:layout_width="100dip" layout_height="100dip"
 	android:id="@+id/user_pic" android:src="@drawable/icon">
 	</ImageView>
 	<Button

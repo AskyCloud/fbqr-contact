@@ -49,7 +49,7 @@ import android.widget.Toast;
 
 public class FbQrContactlist extends ListActivity {
 	/** Called when the activity is first created. */
-	private FbQrDatabase db=new FbQrDatabase(this);
+	private FbQrDatabase db=null;
 	private ArrayAdapter<ContactView>  adapList=null;
 	private ArrayList<ContactView> contactList=null;
 	private Bundle extras=null;
@@ -58,29 +58,25 @@ public class FbQrContactlist extends ListActivity {
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		extras = getIntent().getExtras(); 	       
-	    
 		//UI
 		setContentView(R.layout.contactlayout);		
-    
-		//start activity code
-     	Cursor cursor=db.getData();
-     	FbQrProfile profile;
-     	contactList = new ArrayList<ContactView>();  
-     	while (cursor.moveToNext()) {     		  
-     		profile=db.getProfile(cursor);
-     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
-	    }
-     	db.close();
-     	adapList=new FbQrArrayAdapter(this,contactList);
-     	this.setListAdapter(adapList);
 	}
 	
 	public void onStart(){
 		super.onStart();
+		db=new FbQrDatabase(this);
 		reLoading();
 	}
+	
+	public void onResume(){
+		super.onResume();
+		db=new FbQrDatabase(this);
+	}
+	
+	 public void onPause(){
+		 super.onPause();
+		 db.close();
+	 }
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		  super.onActivityResult(requestCode, resultCode, data);
@@ -105,8 +101,9 @@ public class FbQrContactlist extends ListActivity {
 		  			if(mode.matches("update")){
 		  				if(isOnline()){
 			  				String[] uids = data.getStringArrayExtra("uids");
+			  				String[] pwds = data.getStringArrayExtra("pwds");
 			  				if(uids.length>0)
-			  					mSoap.getFriendInfo(uids, db.getAccessToken(),new getData());
+			  					mSoap.getFriendInfoBypass(uids, db.getAccessToken(),pwds,new getData());
 		  				}
 		  			}
 		  			else reLoading();
@@ -117,7 +114,7 @@ public class FbQrContactlist extends ListActivity {
 	private void reLoading(){		
 		//start activity code
 		Cursor cursor=db.getData();
-     	FbQrProfile profile;
+		FbQrProfile profile;
      	contactList = new ArrayList<ContactView>();  
      	while (cursor.moveToNext()) {     		  
      		profile=db.getProfile(cursor);
@@ -127,6 +124,7 @@ public class FbQrContactlist extends ListActivity {
      	adapList=new FbQrArrayAdapter(this,contactList);
      	this.setListAdapter(adapList);
      	adapList.notifyDataSetChanged();
+     	startManagingCursor(cursor);
 	}
 
 	@Override
@@ -318,10 +316,9 @@ public class FbQrContactlist extends ListActivity {
                     public void run() {
                        FbQrProfile x;
      				   for(int i=0;i<response.size();i++){
-     					   	if(response.get(i).phone!=null)
-     					   		db.addData(response.get(i));
+     					   	db.addData(response.get(i));
      					    x=response.get(i);
-     					    if(x.display!=null) saveDisplay(x.display,x.uid);
+     					    saveDisplay(x.display,x.uid);
      			       }
      				   isDone();      
      				   reLoading();
@@ -342,6 +339,7 @@ public class FbQrContactlist extends ListActivity {
 		
 		URL myFileUrl =null; 
 		Bitmap bmImg;
+		if(fileUrl==null||uid==null) return;
 		try {
 			myFileUrl= new URL(fileUrl);
 		} catch (MalformedURLException e) {		

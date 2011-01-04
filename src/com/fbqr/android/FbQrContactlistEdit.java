@@ -30,14 +30,17 @@ import android.widget.Toast;
 
 public class FbQrContactlistEdit extends FbQrContactlist {
 		/** Called when the activity is first created. */
-		private FbQrDatabase db=new FbQrDatabase(this);
+		private FbQrDatabase db=null;
 		private ArrayAdapter<ContactView>  adapList=null;
 		private ArrayList<ContactView> contactList=null;
 		private Button delBtn,updateBtn,slectBtn;
 		private static boolean isSelectAll = false;
+		private final static String PATH = "/data/data/com.fbqr.android/files/"; 
 		
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
+			
+			db=new FbQrDatabase(this);
 			//UI
 			
 			setContentView(R.layout.contactlayout_edit);
@@ -71,7 +74,12 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		    		    int _size = contactList.size();
 		    	        for (int i = 0; i < _size; i++) {
 		    	          boolean isChecked = contactList.get(i).isChecked();
-		    	          if(isChecked==true) db.deleteData(contactList.get(i).getId());
+		    	          if(isChecked==true){
+		    	        	  db.deleteData(contactList.get(i).getId());
+		    	        	  File img=new File(PATH+contactList.get(i).getUid()+".PNG");
+		    	        	  if(img.exists()) img.delete();
+		    	          }
+		    	          
 		    	        } 	 		    	        
 		    	        //adapList.notifyDataSetChanged();
 		    	        Bundle stats = new Bundle();
@@ -86,36 +94,45 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 			updateBtn.setOnClickListener(new OnClickListener() {
 		    	   public void onClick(View v) {  
 		    		   ArrayList<String> uidList=new ArrayList<String>();
-		    		   
+		    		   ArrayList<String> pwdList=new ArrayList<String>();
 		    		   int _size = contactList.size() - 1;
 		    		   
 		    	        for (int i = 0; i < _size; i++) {
 		    	          boolean isChecked = contactList.get(i).isChecked();
 		    	          if (isChecked == true) {
 		    	        	  uidList.add(contactList.get(i).getUid());
+		    	        	  String password = db.getProfile(contactList.get(i).getUid()).password;
+		    	        	  if(password==null) password="";
+		    	        	  pwdList.add(password);
 		    	          }
 		    	        } 	 
 		    	        
 		    	        String[] uids=new String[uidList.size()];
-		    	        for(int i=0;i<uidList.size();i++)
+		    	        String[] pwds=new String[uidList.size()];
+		    	        for(int i=0;i<uidList.size();i++){
 		    	        	uids[i]=uidList.get(i);
+		    	        	pwds[i]=pwdList.get(i);		    	        	
+		    	        }
 		    	        
 		    	        Bundle stats = new Bundle();
 		    			Intent intent = new Intent();
 		    			stats.putString("MODE","update");
 		    			stats.putStringArray("uids", uids);
-		    			intent.putExtras(stats);
-		    			
+		    			stats.putStringArray("pwds", pwds);
+		    			intent.putExtras(stats);		    			
 		    			setResult(RESULT_OK, intent);
 		    		    finish();
 				    }
 		        });			
+			db.close();
 		}
 	
 		public void onStart(){
 			super.onStart();
 			//start activity code
+			db=new FbQrDatabase(this);
 	     	Cursor cursor=db.getData();
+	     	
 	     	FbQrProfile profile;
 	     	contactList = new ArrayList<ContactView>();  
 	     	while (cursor.moveToNext()) {     		  
@@ -126,8 +143,19 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 	     	db.close();
 	     	adapList=new FbQrArrayAdapterEdit(this,contactList);
 	     	this.setListAdapter(adapList);
+	     	startManagingCursor(cursor);
 		}
 		
+		public void onResume(){
+			super.onResume();
+
+		}
+		
+		 public void onPause(){
+			 super.onPause();
+			 db.close();
+		 }
+		 
 		@Override
 		protected void onListItemClick(ListView l, View v, int position, long id) {			
 			super.onListItemClick(l, v, position, id);			
@@ -135,7 +163,7 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		
 		public static class FbQrArrayAdapterEdit extends ArrayAdapter<ContactView> {
 			private final Activity context;
-			private final String PATH = "/data/data/com.fbqr.android/files/"; 
+			
 			private LayoutInflater inflater;  		
 			private final List<ContactView> contactLists;
 			
