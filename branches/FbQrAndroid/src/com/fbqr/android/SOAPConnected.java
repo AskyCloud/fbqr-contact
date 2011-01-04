@@ -78,15 +78,19 @@ public class SOAPConnected {
 	        	
 	        }
 	        
-	        public void getFriendInfoBypass(String uid,String access_token,String password,final SoapConnectedListener listener){
+	        public void getFriendInfoBypass(String[] uids,String access_token,String[] password,final SoapConnectedListener listener){
 	        	final String method = "getFriendInfoBypass";
 	        	profileList.clear();
 	        	final SoapObject request = new SoapObject(NAMESPACE, method);	  
 	        	Vector<String> data = new Vector<String>();
-	        	data.addElement(uid);	
+	        	Vector<String> password_in = new Vector<String>();
+	        	for(String i:uids)
+	        		data.addElement(i);		
+	        	for(String i:password)
+	        		password_in.addElement(i);
 	        	request.addProperty("uidFr", data);
 	        	request.addProperty("access_token", access_token);
-	        	request.addProperty("password_in", password);
+	        	request.addProperty("password_in", password_in);
 	        	status=false;
 	        	new Thread() {
 	        		public void run() {
@@ -100,12 +104,12 @@ public class SOAPConnected {
 	        	
 	        }
 	        
-	        public void getFriendInfo(String[] uid,String access_token,final SoapConnectedListener listener){
+	        public void getFriendInfo(String[] uids,String access_token,final SoapConnectedListener listener){
 	        	final String method = "getFriendInfo";
 	        	profileList.clear();
 	        	final SoapObject request = new SoapObject(NAMESPACE, method);
 	        	Vector<String> data = new Vector<String>();
-	        	for(String i:uid)
+	        	for(String i:uids)
 	        		data.addElement(i);	        	    	
 	        	request.addProperty("uidFr", data);
 	        	request.addProperty("access_token", access_token);
@@ -163,7 +167,7 @@ public class SOAPConnected {
         };
         
         private void updateStartedInUI(){
-        	Toast.makeText(act, "downloading", Toast.LENGTH_LONG).show();        	
+        	Toast.makeText(act, "Downloading", Toast.LENGTH_LONG).show();        	
         }
         
         private void updateResultsInUI() {	        	
