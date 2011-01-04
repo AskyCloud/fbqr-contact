@@ -21,16 +21,15 @@ public final class R {
         public static final int email=0x7f020007;
         public static final int facebook_icon=0x7f020008;
         public static final int icon=0x7f020009;
-        public static final int login=0x7f02000a;
-        public static final int logo=0x7f02000b;
-        public static final int name=0x7f02000c;
-        public static final int phone=0x7f02000d;
-        public static final int profile_icon=0x7f02000e;
-        public static final int profile_iconfade=0x7f02000f;
-        public static final int profile_tab=0x7f020010;
-        public static final int stat=0x7f020011;
-        public static final int status=0x7f020012;
-        public static final int website=0x7f020013;
+        public static final int logo=0x7f02000a;
+        public static final int name=0x7f02000b;
+        public static final int phone=0x7f02000c;
+        public static final int profile_icon=0x7f02000d;
+        public static final int profile_iconfade=0x7f02000e;
+        public static final int profile_tab=0x7f02000f;
+        public static final int stat=0x7f020010;
+        public static final int status=0x7f020011;
+        public static final int website=0x7f020012;
     }
     public static final class id {
         public static final int CheckBox01=0x7f05000b;
