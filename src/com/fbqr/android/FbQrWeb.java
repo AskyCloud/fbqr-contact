@@ -21,8 +21,8 @@ public class FbQrWeb extends Activity{
 		// browser.setBackgroundColor(color.black);
 	 }
 	 
-	 public void onStart(){
-		 super.onStart();
+	 public void onResume(){
+		 super.onResume();
 		 db=new FbQrDatabase(this);
 		 if(isOnline()){
 			 Toast.makeText(this, "Loading", Toast.LENGTH_LONG).show();
