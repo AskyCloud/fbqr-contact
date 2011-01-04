@@ -18,6 +18,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +27,10 @@ public class FbQrDisplayProfile extends Activity{
 
 	//super.onCreate(savedInstanceState);
    // setContentView.(R.layout.main_layout);
-	Button bUser_name,bUser_phone,bUser_address,bUser_stat,bUser_website,bUser_email
-			,bUser_textMessage,bUser_ShareContact,bUser_AddToFavorite;//,bUser_,bUser_,bUser_;
-	ImageView ivUser_pic;
+	TextView nameText,phoneText,addressText,statText,websiteText,emailText;
+	ImageView statImg,phoneImg,emailImg,websiteImg,adsImg,ivUser_pic;
+	TableRow phoneTr,addressTr,statTr,websiteTr,emailTr;
+
 	private final String PATH = "/data/data/com.fbqr.android/files/"; 
 	private Bundle extras=null;
 	private FbQrDatabase db=null;
@@ -46,72 +49,74 @@ public class FbQrDisplayProfile extends Activity{
 		
 		//UI
 		setContentView(R.layout.user);
-		Button statBtn,phoneBtn,emailBtn,websiteBtn,adsBtn;
-		statBtn=(Button) findViewById(R.id.statbtn);
-		phoneBtn=(Button) findViewById(R.id.phoneBtn);
-		emailBtn=(Button) findViewById(R.id.emailBtn);
-		websiteBtn=(Button) findViewById(R.id.websiteBtn);
-		adsBtn=(Button) findViewById(R.id.adsBtn);
-		ivUser_pic = (ImageView) findViewById(R.id.user_pic);
-		bUser_name = (Button) findViewById(R.id.user_name);
-		bUser_stat = (Button) findViewById(R.id.user_stat);
-		bUser_phone = (Button) findViewById(R.id.user_mobile);
-		bUser_email = (Button) findViewById(R.id.user_email);
-		bUser_website = (Button) findViewById(R.id.user_website);
-		bUser_address = (Button) findViewById(R.id.user_address);
-		bUser_textMessage = (Button) findViewById(R.id.user_textMessage);
-		bUser_ShareContact = (Button) findViewById(R.id.user_ShareContact);
-		bUser_AddToFavorite = (Button) findViewById(R.id.user_AddToFavorite);
-		//bUser_pic = (Button) findViewById(R.id.updateBtn);
 		
-		bUser_textMessage.setVisibility(Button.INVISIBLE);
-		bUser_ShareContact.setVisibility(Button.INVISIBLE);
-		bUser_AddToFavorite.setVisibility(Button.INVISIBLE);
+		//TableRow
+		TableLayout table = (TableLayout)findViewById(R.id.table);
+		TableLayout nameTl=(TableLayout)findViewById(R.id.TrName);
+		phoneTr=(TableRow)findViewById(R.id.TrPhone);
+		addressTr=(TableRow)findViewById(R.id.TrAddress);
+		statTr=(TableRow)findViewById(R.id.TrStatus);
+		websiteTr=(TableRow)findViewById(R.id.TrWebsite);
+		emailTr=(TableRow)findViewById(R.id.TrEmail);
+		
+		
+		
+		//ImageView
+		ivUser_pic = (ImageView) findViewById(R.id.image_name);		
+		statImg=(ImageView) findViewById(R.id.image_status);
+		phoneImg=(ImageView) findViewById(R.id.image_phone);
+		emailImg=(ImageView) findViewById(R.id.image_email);
+		websiteImg=(ImageView) findViewById(R.id.image_website);
+		adsImg=(ImageView) findViewById(R.id.image_address);
+		
+		//TextView		
+		nameText = (TextView) findViewById(R.id.text_name);
+		phoneText = (TextView) findViewById(R.id.text_phone);
+		addressText = (TextView) findViewById(R.id.text_address);
+		statText = (TextView) findViewById(R.id.text_status);
+		websiteText = (TextView) findViewById(R.id.text_website);
+		emailText = (TextView) findViewById(R.id.text_email);
+
 		
 		//SET user profile
 		File img=new File(PATH+profile.uid+".PNG");
 	    if(img.exists())
 	    	ivUser_pic.setImageBitmap(BitmapFactory.decodeFile(img.getPath())); 
 	    if(profile.name==null){
-	    	bUser_name.setVisibility(Button.INVISIBLE);
+	    	nameTl.removeAllViews();
 	    }
-		else bUser_name.setText("Call :"+profile.name);
+		else nameText.setText(profile.name);
 	    if(profile.status==null){
-	    	//statBtn.setVisibility(Button.INVISIBLE);
-	    	//bUser_stat.setVisibility(Button.INVISIBLE);
+	    	table.removeView(statTr);
 	    }
-		else bUser_stat.setText(profile.status);
+		else statText.setText(profile.status);
 	    if(profile.phone==null) {
-	    	//phoneBtn.setVisibility(Button.INVISIBLE);
-	    	//bUser_phone.setVisibility(Button.INVISIBLE);
+	    	table.removeView(phoneTr);  	
 	    }
-		else bUser_phone.setText(profile.phone);
+		else phoneText.setText(profile.phone);
 	    if(profile.email==null) {
-	    	//emailBtn.setVisibility(Button.INVISIBLE);
-	    	//bUser_email.setVisibility(Button.INVISIBLE);
+	    	table.removeView(emailTr);
 	    }
-		else bUser_email.setText(profile.email);
+		else emailText.setText(profile.email);
 	    if(profile.website==null){
-	    	//websiteBtn.setVisibility(Button.INVISIBLE);
-	    	//bUser_website.setVisibility(Button.INVISIBLE);
+	    	table.removeView(websiteTr);
 	    }
-		else bUser_website.setText(profile.website);
+		else websiteText.setText(profile.website);
 	    if(profile.address==null){
-	    	//adsBtn.setVisibility(Button.INVISIBLE);
-	    	//bUser_address.setVisibility(Button.INVISIBLE);
+	    	table.removeView(addressTr);
 	    }
-		else bUser_address.setText(profile.address);
-		
-		bUser_phone.setOnClickListener(new OnClickListener() {
-	    	   public void onClick(View v) {		    		   
-	    		   Call();
-	    	   }} 	
-	    );
-		bUser_name.setOnClickListener(new OnClickListener() {
-	    	   public void onClick(View v) {		    		   
-	    		   Call();
-	    	   }} 	
-	    );
+		else addressText.setText(profile.address);
+	    
+	    phoneImg.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	Call();
+            }
+        });
+	    phoneText.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	Call();
+            }
+        });
 		db.close();
 	}
 	
