@@ -1,137 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout
-android:id="@+id/widget55"
+android:id="@+id/table"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 android:orientation="vertical"
 xmlns:android="http://schemas.android.com/apk/res/android"
 >
-<TableRow
-android:id="@+id/widget56"
-android:layout_height="wrap_content"
-android:orientation="horizontal" android:layout_width="fill_parent">
-	<ImageView
-	android:layout_width="100dip" layout_height="100dip"
-	android:id="@+id/user_pic" android:src="@drawable/icon">
-	</ImageView>
-	<Button
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:id="@+id/user_name" android:text="Call">
-		</Button>
-</TableRow>
-<TableRow
-android:id="@+id/widget58"
-android:layout_width="fill_parent"
-android:layout_height="wrap_content"
-android:orientation="horizontal"
->
-<Button
-android:id="@+id/phoneBtn"
+<TableLayout
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:background="@drawable/user_07">
-</Button>
-<Button
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:background="@drawable/user_08" android:id="@+id/user_mobile">
-</Button>
-</TableRow>
-<TableRow
-android:id="@+id/widget59"
-android:layout_width="fill_parent"
-android:layout_height="wrap_content"
-android:orientation="horizontal"
->
-<Button
-android:id="@+id/emailBtn"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:background="@drawable/user_09">
-</Button>
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/user_10" android:id="@+id/user_email"></Button>
-</TableRow>
+android:orientation="vertical"
+android:id="@+id/TrName">
 <TableRow
 android:id="@+id/widget57"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:orientation="horizontal"
 >
-<Button
+<ImageView
 android:layout_width="wrap_content"
-android:layout_height="wrap_content" android:background="@drawable/user_05" android:id="@+id/statbtn">
-</Button>
-<Button
+android:layout_height="wrap_content"
+android:minWidth="64px" android:minHeight="64px" android:maxHeight="128px" android:maxWidth="128px" 
+android:scrollbars="none" android:layout_margin="3px" android:id="@+id/image_name" android:src="@drawable/name"
+android:layout_marginTop="4px" android:layout_marginRight="4px" android:layout_marginLeft="4px">
+</ImageView>
+<TextView
 android:layout_width="wrap_content"
-android:layout_height="wrap_content" android:background="@drawable/user_06" android:id="@+id/user_stat">
-</Button>
-
+android:layout_height="wrap_content"
+android:textSize="24dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_name">
+</TextView>
 </TableRow>
+</TableLayout>
+
 <TableRow
-android:id="@+id/widget66"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:orientation="horizontal"
->
-<Button
-android:id="@+id/websiteBtn"
+android:id="@+id/TrPhone">
+<ImageView
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:background="@drawable/user_11">
-</Button>
-<Button
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/phone" android:id="@+id/image_phone">
+</ImageView>
+<TextView
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:background="@drawable/user_12" android:id="@+id/user_website">
-</Button>
+android:textSize="24dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_phone">
+</TextView>
 </TableRow>
 <TableRow
-android:id="@+id/widget67"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:orientation="horizontal"
->
-<Button
-android:id="@+id/adsBtn"
+android:id="@+id/TrEmail">
+<ImageView
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:background="@drawable/user_13">
-</Button>
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/user_14" android:id="@+id/user_address"></Button>
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/email" android:id="@+id/image_email">
+</ImageView>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="18dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_email">
+</TextView>
 </TableRow>
-
-<RelativeLayout
-android:id="@+id/widget85"
+<TableRow
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/TrStatus">
+<ImageView
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
->
-<Button
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/status" android:id="@+id/image_status">
+</ImageView>
+<TextView
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:layout_alignParentTop="true"
-
-android:background="@drawable/user_17" android:id="@+id/user_AddToFavorite"
-android:layout_toRightOf="@+id/user_ShareContact">
-</Button>
-<Button
+android:textSize="18dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_status">
+</TextView>
+</TableRow>
+<TableRow
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/TrWebsite">
+<ImageView
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:layout_alignParentTop="true"
-android:layout_toRightOf="@+id/user_textMessage"
-android:background="@drawable/user_16" android:id="@+id/user_ShareContact">
-</Button>
-<Button
-android:id="@+id/user_textMessage"
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/website" android:id="@+id/image_website">
+</ImageView>
+<TextView
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:layout_alignParentTop="true"
-android:layout_alignParentLeft="true"
-
-android:background="@drawable/user_15">
-</Button>
-</RelativeLayout>
-
-
-
+android:textSize="18dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_website">
+</TextView>
+</TableRow>
+<TableRow
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/TrAddress">
+<ImageView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/address" android:id="@+id/image_address">
+</ImageView>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="18dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_address">
+</TextView>
+</TableRow>
 </TableLayout>
