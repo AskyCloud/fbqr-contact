@@ -22,7 +22,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class SOAPConnected {
-			private ArrayList<FbQrProfile> profileList=new ArrayList();
+			private ArrayList<FbQrProfile> profileList=new ArrayList<FbQrProfile>();
 	        protected static final String TAG = "SOAPConnected";
 	        
 	        private static final String NAMESPACE = "urn:fbqrwsdl";
@@ -78,15 +78,19 @@ public class SOAPConnected {
 	        	
 	        }
 	        
-	        public void getFriendInfoBypass(String uid,String access_token,String password,final SoapConnectedListener listener){
+	        public void getFriendInfoBypass(String[] uids,String access_token,String[] password,final SoapConnectedListener listener){
 	        	final String method = "getFriendInfoBypass";
 	        	profileList.clear();
 	        	final SoapObject request = new SoapObject(NAMESPACE, method);	  
-	        	Vector<String> data = new Vector();
-	        	data.addElement(uid);	
+	        	Vector<String> data = new Vector<String>();
+	        	Vector<String> password_in = new Vector<String>();
+	        	for(String i:uids)
+	        		data.addElement(i);		
+	        	for(String i:password)
+	        		password_in.addElement(i);
 	        	request.addProperty("uidFr", data);
 	        	request.addProperty("access_token", access_token);
-	        	request.addProperty("password_in", password);
+	        	request.addProperty("password_in", password_in);
 	        	status=false;
 	        	new Thread() {
 	        		public void run() {
@@ -100,12 +104,12 @@ public class SOAPConnected {
 	        	
 	        }
 	        
-	        public void getFriendInfo(String[] uid,String access_token,final SoapConnectedListener listener){
+	        public void getFriendInfo(String[] uids,String access_token,final SoapConnectedListener listener){
 	        	final String method = "getFriendInfo";
 	        	profileList.clear();
 	        	final SoapObject request = new SoapObject(NAMESPACE, method);
-	        	Vector<String> data = new Vector();
-	        	for(String i:uid)
+	        	Vector<String> data = new Vector<String>();
+	        	for(String i:uids)
 	        		data.addElement(i);	        	    	
 	        	request.addProperty("uidFr", data);
 	        	request.addProperty("access_token", access_token);
@@ -134,7 +138,7 @@ public class SOAPConnected {
 		        	SoapObject resultsRequestSOAP = (SoapObject)envelope.bodyIn;
 		        	//SoapObject resultsRequestSOAP = (SoapObject)envelope.getResponse();
 		        	
-		        	Vector<SoapObject> XXXX = (Vector) resultsRequestSOAP.getProperty(0);
+		        	Vector<SoapObject> XXXX = (Vector<SoapObject>) resultsRequestSOAP.getProperty(0);
 		        			        	
 					for(int i=0;i<XXXX.size();i++)
 		        	    profileList.add(i,new FbQrProfile(XXXX.get(i)));
@@ -163,7 +167,7 @@ public class SOAPConnected {
         };
         
         private void updateStartedInUI(){
-        	Toast.makeText(act, "downloading", Toast.LENGTH_LONG).show();        	
+        	Toast.makeText(act, "Downloading", Toast.LENGTH_LONG).show();        	
         }
         
         private void updateResultsInUI() {	        	

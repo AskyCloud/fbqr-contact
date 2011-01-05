@@ -15,6 +15,10 @@ public class ReadFbQR{
 	
 	public void read(String qrtext){
 		profileList.clear();
+		type=null;
+		qrid=null;
+		this.qrtext=null;
+		name=null;
 		if(qrtext.startsWith("MECARD:")){ //if multi data
 			qrtext = qrtext.replaceFirst("MECARD:",""); 
 			String[] str=qrtext.split(";");
@@ -25,13 +29,14 @@ public class ReadFbQR{
 			else addSingleProfile(str); //individual qr
 		}
 		else{ //if single data
-			if(qrtext.startsWith("tel:")) addSingledata(qrtext,"tel:","phone");
+			/*if(qrtext.startsWith("tel:")) addSingledata(qrtext,"tel:","phone");
 			else if(qrtext.startsWith("mailto:")) addSingledata(qrtext,"mailto:","email");
 				else if(qrtext.startsWith("http://")) addSingledata(qrtext,"http://","website");		
-					else {
+					else {*/
 						type="etc";
 						this.qrtext=qrtext;
-					}
+					/*}
+			*/
 		}
 	}
 	private boolean addSingledata(String qrtext,String tag,String val){

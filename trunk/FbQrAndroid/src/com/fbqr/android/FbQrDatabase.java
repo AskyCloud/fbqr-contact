@@ -2,79 +2,135 @@ package com.fbqr.android;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 
-public class FbQrDatabase{
-  EventDataSQLHelper eventsData;
+public class FbQrDatabase extends Activity{
+  EventDataSQLHelper eventsData=null;
   Cursor cursor;
-    public FbQrDatabase(Context context) {
-    eventsData = new EventDataSQLHelper(context);
-   // addEvent("Hello Android Event");
-    //Cursor cursor = getEvents();
-    //showEvents(cursor);
+  
+  public FbQrDatabase(Context context) {
+	  eventsData = new EventDataSQLHelper(context);
   }
   
-   public void close() {
-    eventsData.close();
+  public boolean isOpen() {
+	  SQLiteDatabase db = eventsData.getReadableDatabase();
+	  return db.isOpen();
+ }  
+  
+  public void close() {
+	   eventsData.close();
   }
   
    public void delete() {
 	   SQLiteDatabase db = eventsData.getReadableDatabase();
 	   eventsData.delete(db);
    }
-
+   
    private ContentValues addValues(FbQrProfile data){
 	   ContentValues values = new ContentValues();
 	    values.put(EventDataSQLHelper.ADDRESS, data.address);
-	    values.put(EventDataSQLHelper.EMAIL, data.email);
-	    //values.put(EventDataSQLHelper.LAST_UPDATE, );
-	    values.put(EventDataSQLHelper.NAME, data.name);
+	    values.put(EventDataSQLHelper.EMAIL,data.email);
+	    values.put(EventDataSQLHelper.LAST_UPDATE,System.currentTimeMillis());
+	    if(data.count!=-1) values.put(EventDataSQLHelper.COUNT,data.count);
+	    values.put(EventDataSQLHelper.NAME, (data.name!=null)?data.name:data.phone);
 	    values.put(EventDataSQLHelper.PHONE, data.phone);
 	    values.put(EventDataSQLHelper.STATUS, data.status);
-	    values.put(EventDataSQLHelper.UID, data.id);
+	    values.put(EventDataSQLHelper.UID, data.uid);
 	    values.put(EventDataSQLHelper.WEBSITE, data.website);
 	    values.put(EventDataSQLHelper.DISPLAY, data.display);
+	    values.put(EventDataSQLHelper.PASSWORD, data.password);
 	    return values;
 	   
    }
    
+  
   public void addData(FbQrProfile data) {
-    SQLiteDatabase db = eventsData.getWritableDatabase();
-    if(updateData(data)) return;
-    db.insert(EventDataSQLHelper.TABLE, null, addValues(data));        
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  if(data.phone!=null||data.uid!=null){
+		  if(updateData(data)) return;
+		  data.count=0;
+		  db.insert(EventDataSQLHelper.TABLE, null, addValues(data));   
+	  }
   }
   
   public boolean updateData(FbQrProfile data) {
 	  SQLiteDatabase db = eventsData.getWritableDatabase();
-	  return db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.UID+ "=" + data.id, null)>0;
+	  int updated=0;
+	  if(data.uid==null){
+		  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.PHONE+ " = " +"'"+ data.phone+"'", null, null, null, null);
+		  startManagingCursor(cursor);
+		  if(!cursor.moveToFirst()) updated=db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.PHONE+ " = " +"'"+ data.phone+"'", null );
+		  else updated=0;
+	  }
+	  else {
+		  updated=db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.UID+ " = " + "'"+data.uid+"'", null);
+	  }
+	  return updated>0;
  }
   
   public boolean deleteData(String uid){
 	  SQLiteDatabase db = eventsData.getWritableDatabase();
 	  return db.delete(EventDataSQLHelper.TABLE, EventDataSQLHelper.UID+ "=" + uid, null)>0;
   } 
-   
+  
+  public boolean deleteData(int id){
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  return db.delete(EventDataSQLHelper.TABLE, EventDataSQLHelper.ID+ "=" + id, null)>0;
+  } 
+  
   public Cursor getData() {
-    SQLiteDatabase db = eventsData.getReadableDatabase();
-    Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, null, null, null, null, null);    
-   // startManagingCursor(cursor);
-    return cursor;
+	  SQLiteDatabase db = eventsData.getReadableDatabase();
+	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, null, null, null, null, EventDataSQLHelper.COUNT + " DESC"); 
+	  startManagingCursor(cursor);
+	  return cursor;
   }
-   
-   public FbQrProfile getProfile(int id) {
-	    SQLiteDatabase db = eventsData.getReadableDatabase();
-	    Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, null, null, null, null, null);    
-	    cursor.moveToPosition(id);
-	    return getProfile(cursor);
+  
+  public FbQrProfile getProfile(String uid) {
+	  SQLiteDatabase db = eventsData.getReadableDatabase();
+	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.UID+ " = "+ "'"+uid+"'", null, null, null, null);   
+	  startManagingCursor(cursor);
+	  cursor.moveToFirst();
+	  FbQrProfile profile=getProfile(cursor);
+	  return profile;
+   }
+  
+  public FbQrProfile getProfile(int id) {
+	  SQLiteDatabase db = eventsData.getReadableDatabase();
+	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.ID+ " = " + id, null, null, null, null);
+	  startManagingCursor(cursor);
+	  cursor.moveToFirst();
+	  FbQrProfile profile=getProfile(cursor);
+	  return profile;
+   }
+  
+  public void setAccessToken(String access_token){
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  ContentValues values = new ContentValues();
+	    values.put(EventDataSQLHelper.ACCESS_TOKEN, access_token);
+	  Boolean update=db.update(EventDataSQLHelper.cfgTABLE, values, EventDataSQLHelper.ID+ " = 1", null)>0;
+	  if(update) return ;
+	  else db.insert(EventDataSQLHelper.cfgTABLE, null, values);  
+   }
+  
+  public String getAccessToken(){
+	  String AccessToken=null;
+	  SQLiteDatabase db = eventsData.getWritableDatabase();
+	  Cursor cursor = db.query(EventDataSQLHelper.cfgTABLE, null, null, null, null, null, null);
+	  startManagingCursor(cursor);
+	  if(!cursor.moveToFirst()) AccessToken=null;	  
+	  else AccessToken=cursor.getString(1);
+	  return AccessToken;
    }
    
-   public FbQrProfile getProfile(Cursor cursor) {
+ public FbQrProfile getProfile(Cursor cursor) {
+	 	if(cursor==null) return null;
 	    FbQrProfile data=new FbQrProfile();
-	    data.id=cursor.getString(1);
+	    data.uid=cursor.getString(1);
 	    data.name=cursor.getString(2);
 	    data.phone=cursor.getString(3);
 	    data.email=cursor.getString(4);
@@ -82,6 +138,9 @@ public class FbQrDatabase{
 	    data.address=cursor.getString(6);
 	    data.website=cursor.getString(7);
 	    data.display=cursor.getString(8);
+	    data.password=cursor.getString(9);
+	    data.count=cursor.getLong(10);
+	    data.last_update=cursor.getLong(11);
 	    return data;
   }
    
@@ -89,6 +148,7 @@ public class FbQrDatabase{
 
    public String showData() {
 	Cursor cursor=getData();
+	startManagingCursor(cursor);
     StringBuilder ret = new StringBuilder("Saved Events:\n\n");
     while (cursor.moveToNext()) {
       long id = cursor.getLong(0);
@@ -101,7 +161,5 @@ public class FbQrDatabase{
       }*/
     }
     return ret.toString();
-  }
-   
-   
+  }   
 }
