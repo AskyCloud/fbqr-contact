@@ -178,7 +178,7 @@ public class FbQrBackground extends Activity{
                             else{
                             	if(readQR.type.matches("multiqr_p")){   
                             		if(isOnline()){
-                            			showAddDialog();                                        
+                            			askPasswordforMultiQR();                                        
                             		}else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();      
                             	}
                                 else{
@@ -353,7 +353,7 @@ public class FbQrBackground extends Activity{
             }
     }
 		
-		private void showAddDialog() { 
+		private void askPasswordforMultiQR() { 
 
 			final String TAG = "pwd"; 
 			final Dialog dialog = new Dialog(this); 
@@ -378,7 +378,8 @@ public class FbQrBackground extends Activity{
 				// @Override 
 				public void onClick(View v) { 
 					multiqr_password=textbox.getText().toString();
-					mSoap.getMulti(readQR.qrid, db.getAccessToken(),multiqr_password,new getData());
+					if(multiqr_password!=null)
+						mSoap.getMulti(readQR.qrid, db.getAccessToken(),multiqr_password,new getData());
 					dialog.dismiss(); 
 				} 
 			}); 
