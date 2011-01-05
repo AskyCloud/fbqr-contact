@@ -8,20 +8,22 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class FbQrProfile {
-	public String name,phone,address,email,website,id,status,last_update,display;
+	public String name,phone,address,email,website,uid,status,display,password;
+	public long count,last_update;
 	
 	public FbQrProfile(){
-		
+		name=phone=address=email=website=uid=status=display=password=null;
 	}
 	
 	public FbQrProfile(SoapObject obj){
+			name=phone=address=email=website=uid=status=display=password=null;
 			set(obj);
 	}
 	
 	private void set(SoapObject obj){
 		if(obj.hasProperty("id"))	{
-			id=obj.getProperty("id").toString();
-			if(id.equals("")) id=null;
+			uid=obj.getProperty("id").toString();
+			if(uid.equals("")) uid=null;
 		}
 		if(obj.hasProperty("name")) {
 			name=obj.getProperty("name").toString();
@@ -51,12 +53,13 @@ public class FbQrProfile {
 			display=obj.getProperty("display").toString();
 			if(display.equals("")) display=null;
 		}
+		count=-1;
 	}
 	
 	public String show(){
 		String text;
 		//display=name+"\n"+phone+"\n"+address+"\n"+email+"\n"+website+"\n"+id+"\n"+status;
-		text=name+"\n"+display+"\n";
+		text=name+"\n"+phone+"\n";
 		return text;
 	}
 }

@@ -73,7 +73,7 @@ public class FbDialog extends Dialog {
         
         mContent = new LinearLayout(getContext());
         mContent.setOrientation(LinearLayout.VERTICAL);
-        setUpTitle();
+        //setUpTitle();
         setUpWebView();
         Display display = getWindow().getWindowManager().getDefaultDisplay();
         final float scale = getContext().getResources().getDisplayMetrics().density;
@@ -83,7 +83,7 @@ public class FbDialog extends Dialog {
         		(int) (dimensions[0] * scale + 0.5f),
         		(int) (dimensions[1] * scale + 0.5f)));
     }
-
+/*
     private void setUpTitle() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         Drawable icon = getContext().getResources().getDrawable(
@@ -98,7 +98,7 @@ public class FbDialog extends Dialog {
         mTitle.setCompoundDrawablesWithIntrinsicBounds(
                 icon, null, null, null);
         mContent.addView(mTitle);
-    }
+    }*/
     
     private void setUpWebView() {
         mWebView = new WebView(getContext());

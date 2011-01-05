@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+android:id="@+id/table"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:orientation="vertical"
+xmlns:android="http://schemas.android.com/apk/res/android"
+>
+<TableLayout
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:id="@+id/TrName">
+<TableRow
+android:id="@+id/widget57"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+>
+<ImageView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:minWidth="64px" android:minHeight="64px" android:maxHeight="128px" android:maxWidth="128px" 
+android:scrollbars="none" android:layout_margin="3px" android:id="@+id/image_name" android:src="@drawable/name"
+android:layout_marginTop="4px" android:layout_marginRight="4px" android:layout_marginLeft="4px">
+</ImageView>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="24dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_name">
+</TextView>
+</TableRow>
+</TableLayout>
+
+<TableRow
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/TrPhone">
+<ImageView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/phone" android:id="@+id/image_phone">
+</ImageView>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="24dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_phone">
+</TextView>
+</TableRow>
+<TableRow
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/TrEmail">
+<ImageView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/email" android:id="@+id/image_email">
+</ImageView>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="18dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_email">
+</TextView>
+</TableRow>
+<TableRow
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/TrStatus">
+<ImageView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/status" android:id="@+id/image_status">
+</ImageView>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="18dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_status">
+</TextView>
+</TableRow>
+<TableRow
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/TrWebsite">
+<ImageView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/website" android:id="@+id/image_website">
+</ImageView>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="18dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_website">
+</TextView>
+</TableRow>
+<TableRow
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/TrAddress">
+<ImageView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="10px"
+android:layout_margin="3px" android:background="@drawable/address" android:id="@+id/image_address">
+</ImageView>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="18dip"
+android:layout_gravity="center_vertical" android:id="@+id/text_address">
+</TextView>
+</TableRow>
+</TableLayout>
