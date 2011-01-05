@@ -165,8 +165,6 @@ public class FbQrDisplayProfile extends Activity{
 	    switch (item.getItemId()) {
 	    case pwdBtnId:
 	    	showAddDialog(); 
-	    	Toast.makeText(getBaseContext(), "Test", Toast.LENGTH_LONG) 
-	    	.show(); 
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -198,7 +196,8 @@ public class FbQrDisplayProfile extends Activity{
 			// @Override 
 			public void onClick(View v) { 
 				profile.password=textbox.getText().toString();
-				db.updateData(profile);
+				if(profile.password!=null)
+					db.updateData(profile);
 				dialog.dismiss(); 
 			} 
 		}); 
