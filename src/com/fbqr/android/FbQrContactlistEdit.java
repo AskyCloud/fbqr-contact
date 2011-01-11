@@ -55,13 +55,13 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 			    	        for (int i = 0; i < _size; i++) {
 			    	        	contactList.get(i).setChecked(false);
 			    	        } 
-			    	        isSelectAll=true;
+			    	        isSelectAll=false;
 			    	        slectBtn.setText("Select All");
 		    		   }else{		    			   
 			    	        for (int i = 0; i < _size; i++) {
 			    	        	contactList.get(i).setChecked(true);
 			    	        } 
-			    	        isSelectAll=false;
+			    	        isSelectAll=true;
 			    	        slectBtn.setText("unSelect All");
 		    		   }
 		    		   adapList.notifyDataSetChanged();
@@ -100,6 +100,7 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		    	        for (int i = 0; i < _size; i++) {
 		    	          boolean isChecked = contactList.get(i).isChecked();
 		    	          if (isChecked == true) {
+		    	        	  if(contactList.get(i).getUid()==null) continue;
 		    	        	  uidList.add(contactList.get(i).getUid());
 		    	        	  String password = db.getProfile(contactList.get(i).getUid()).password;
 		    	        	  if(password==null) password="";
@@ -148,12 +149,30 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		
 		public void onResume(){
 			super.onResume();
-
+			db=new FbQrDatabase(this);
+	     	Cursor cursor=db.getData();
+	     	
+	     	FbQrProfile profile;
+	     	contactList = new ArrayList<ContactView>();  
+	     	while (cursor.moveToNext()) {     		  
+	     		profile=db.getProfile(cursor);
+	     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
+		    
+	     	}
+	     	db.close();
+	     	adapList=new FbQrArrayAdapterEdit(this,contactList);
+	     	this.setListAdapter(adapList);
+	     	startManagingCursor(cursor);
 		}
 		
 		 public void onPause(){
 			 super.onPause();
 			 db.close();
+		 }
+		 
+		 public void onStop(Bundle savedInstanceState) {
+		       super.onStop();
+		       db.close();
 		 }
 		 
 		@Override

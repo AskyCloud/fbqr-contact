@@ -43,7 +43,7 @@ public class FbQrDisplayProfile extends Activity{
 		super.onCreate(savedInstanceState);
 		
 		extras = getIntent().getExtras(); 	       
-		if(extras !=null)  id= extras.getInt("ID");
+		if(extras !=null) id= extras.getInt("ID");
 		db=new FbQrDatabase(this);	
 		profile=db.getProfile(id);
 		
@@ -117,6 +117,17 @@ public class FbQrDisplayProfile extends Activity{
             	Call();
             }
         });
+	    websiteText.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	Openweb();
+            }
+        });
+	    websiteImg.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	Openweb();
+            }
+        });
+	    
 		db.close();
 	}
 	
@@ -134,6 +145,11 @@ public class FbQrDisplayProfile extends Activity{
 		 super.onPause();
 		 db.close();
 	 }
+	 
+	 public void onStop(Bundle savedInstanceState) {
+	       super.onStop();
+	       db.close();
+	 }
 	
 	void Call(){
 		if (profile.phone == null)	return;
@@ -143,6 +159,13 @@ public class FbQrDisplayProfile extends Activity{
 			FbQrDisplayProfile.this.startActivityForResult(intent,3);		
 	}
 	
+	void Openweb(){
+		if (profile.website == null)	return;
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		Uri data = Uri.parse(profile.website);
+		intent.setData(data);
+		startActivity(intent);
+	}
 	
 	private static final int pwdBtnId = Menu.FIRST;
 	
