@@ -83,4 +83,8 @@ public class FbQrAndroid extends TabActivity{
 	       //setMainTab
 	       tabHost.setCurrentTab(0); 	       
 	   }
+	   public void onStop(Bundle savedInstanceState) {
+	       super.onStop();
+	       db.close();
+	   }
 }

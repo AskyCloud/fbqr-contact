@@ -126,6 +126,11 @@ public class FbQrBackground extends Activity{
 			 super.onPause();
 			 db.close();
 		 }
+		 
+		 public void onStop(Bundle savedInstanceState) {
+		       super.onStop();
+		       db.close();
+		   }
 
 	   public boolean isOnline() {	
 		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -194,6 +199,8 @@ public class FbQrBackground extends Activity{
                                                                 uids[i]=readQR.profileList.get(i).uid;
                                                         Toast.makeText(FbQrBackground.this, "Downloading", Toast.LENGTH_LONG).show();
                                                         mSoap.getFriendInfo(uids, db.getAccessToken(),new getData());
+                                                }else{
+                                                	if(readQR.profileList.get(0).phone!=null) displayResult(readQR.profileList.get(0).uid);
                                                 }
                                         }
                                         Toast.makeText(FbQrBackground.this, "Completed", Toast.LENGTH_LONG).show();
@@ -287,31 +294,45 @@ public class FbQrBackground extends Activity{
             @Override
             public void onComplete(final ArrayList<FbQrProfile> response) {
                     // TODO Auto-generated method stub\
-            	
+           		if(response.size()==1&&response.get(0).uid.matches("wrong password")){
+            			FbQrBackground.this.runOnUiThread(new Runnable() {
+			                public void run() {
+			                		Toast.makeText(FbQrBackground.this, "Wrong Password", Toast.LENGTH_LONG).show();
+			                		askPasswordforMultiQR();
+			                }
+                        });
+            		}
+                else{
                     try {
                             
-                            FbQrBackground.this.runOnUiThread(new Runnable() {
-				                public void run() {
-				                   FbQrProfile x;
-                               for(int i=0;i<response.size();i++){
-                            	   x=response.get(i);
-                                   db.addData(x);                                       
-                                   saveDisplay(x.display,x.uid);
-                                    //display+=x.show()+"\n";
-                               }
-                               //db.close();
-                               isDone();
-                               //tv.setText(display);                          
-                }
-            });
-                            
+	                            FbQrBackground.this.runOnUiThread(new Runnable() {
+					                public void run() {
+						               FbQrProfile x;
+		                               for(int i=0;i<response.size();i++){
+		                            	   x=response.get(i);
+		                                   db.addData(x);                                       
+		                                   saveDisplay(x.display,x.uid);
+		                                    //display+=x.show()+"\n";
+		                               }
+		                               //db.close();
+		                               Toast.makeText(FbQrBackground.this, "Download Completed", Toast.LENGTH_LONG).show();
+		                               if(response.size()==1){
+		                            	   if(response.get(0).phone!=null)
+		                            		   displayResult(response.get(0).uid);
+		                               }
+		                               //tv.setText(display);   
+					                }
+                             });
+                             
                     } catch (Exception e) {
                             Log.w("getData", e.toString());
-        } 
-            }       
-            private void isDone(){
-                    Toast.makeText(FbQrBackground.this, "Download Completed", Toast.LENGTH_LONG).show();
+                    } 
             }
+            }       
+            public void onError(String e)
+			{
+            	 Toast.makeText(FbQrBackground.this, e.toString(), Toast.LENGTH_LONG).show();
+			}
 		}
 		
 		private void saveDisplay(String fileUrl,String uid){
@@ -391,4 +412,10 @@ public class FbQrBackground extends Activity{
 				} 
 			}); 
 		} 
+		
+		private void displayResult(String uid){
+     	   	Intent intent = new Intent(this, FbQrDisplayProfile.class);     	   	;
+  			intent.putExtra("ID", db.getIdByUid(uid));
+  			startActivityForResult(intent,4);			
+		}
 }

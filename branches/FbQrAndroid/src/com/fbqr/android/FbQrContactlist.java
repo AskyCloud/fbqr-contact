@@ -71,11 +71,17 @@ public class FbQrContactlist extends ListActivity {
 	public void onResume(){
 		super.onResume();
 		db=new FbQrDatabase(this);
+		reLoading();
 	}
 	
 	 public void onPause(){
 		 super.onPause();
 		 db.close();
+	 }
+	 
+	 public void onStop(Bundle savedInstanceState) {
+	       super.onStop();
+	       db.close();
 	 }
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -320,7 +326,7 @@ public class FbQrContactlist extends ListActivity {
      					    x=response.get(i);
      					    saveDisplay(x.display,x.uid);
      			       }
-     				   isDone();      
+     				   Toast.makeText(FbQrContactlist.this,"Download Completed", Toast.LENGTH_LONG).show();      
      				   reLoading();
                     }
                 });
@@ -329,8 +335,9 @@ public class FbQrContactlist extends ListActivity {
 				Log.w("getData", e.toString());
             } 
 		}	
-		private void isDone(){
-			Toast.makeText(FbQrContactlist.this,"Download Completed", Toast.LENGTH_LONG).show();
+		public void onError(String e)
+		{
+         	 Toast.makeText(FbQrContactlist.this, e.toString(), Toast.LENGTH_LONG).show();
 		}
    }
    
