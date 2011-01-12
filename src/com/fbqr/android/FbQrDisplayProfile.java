@@ -117,14 +117,43 @@ public class FbQrDisplayProfile extends Activity{
             	Call();
             }
         });
+	    
 	    websiteText.setOnClickListener(new View.OnClickListener() {
+	    	
             public void onClick(View v) {
-            	Openweb();
+            	if (profile.website == null)	return;
+            	Openweb(profile.website);
             }
         });
 	    websiteImg.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	Openweb();
+            	if (profile.website == null)	return;
+            	Openweb(profile.website);
+            }
+        });
+	    
+	    ivUser_pic.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	if (profile.uid==null) return;
+            	Openweb("http://m.facebook.com/profile.php?id="+profile.uid);
+            }
+        });
+	    nameText.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	if (profile.uid==null) return;
+            	Openweb("http://m.facebook.com/profile.php?id="+profile.uid);
+            }
+        });
+	    
+	    emailText.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	sendMail();
+            }
+        });
+	    
+	    emailImg.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	sendMail();
             }
         });
 	    
@@ -159,10 +188,23 @@ public class FbQrDisplayProfile extends Activity{
 			FbQrDisplayProfile.this.startActivityForResult(intent,3);		
 	}
 	
-	void Openweb(){
-		if (profile.website == null)	return;
+	void sendMail(){
+		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+		 
+		emailIntent.setType("plain/text");
+		 
+		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{profile.email});
+		 
+		//emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "FbQrContact:Hello");
+		 
+		//emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "this mail via FbQr Contact");
+		 
+		startActivity(Intent.createChooser(emailIntent, "Send mail"));
+	}
+	
+	void Openweb(String Url){
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		Uri data = Uri.parse(profile.website);
+		Uri data = Uri.parse(Url);
 		intent.setData(data);
 		startActivity(intent);
 	}

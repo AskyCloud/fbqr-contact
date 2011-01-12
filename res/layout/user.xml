@@ -20,7 +20,7 @@ android:orientation="horizontal"
 <ImageView
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:minWidth="64px" android:minHeight="64px" android:maxHeight="128px" android:maxWidth="128px" 
+android:minWidth="50px" android:minHeight="50px" android:maxHeight="50px" android:maxWidth="50px" 
 android:scrollbars="none" android:layout_margin="3px" android:id="@+id/image_name" android:src="@drawable/name"
 android:layout_marginTop="4px" android:layout_marginRight="4px" android:layout_marginLeft="4px">
 </ImageView>
