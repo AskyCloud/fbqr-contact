@@ -94,9 +94,8 @@ public class FbQrDatabase extends Activity{
 	  SQLiteDatabase db = eventsData.getReadableDatabase();
 	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.UID+ " = "+ "'"+uid+"'", null, null, null, null);   
 	  startManagingCursor(cursor);
-	  cursor.moveToFirst();
-	  FbQrProfile profile=getProfile(cursor);
-	  return profile;
+	  if(!cursor.moveToFirst()) return null;
+	  else  return getProfile(cursor);
    }
   
   public FbQrProfile getProfile(int id) {
@@ -104,16 +103,16 @@ public class FbQrDatabase extends Activity{
 	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.ID+ " = " + id, null, null, null, null);
 	  startManagingCursor(cursor);
 	  cursor.moveToFirst();
-	  FbQrProfile profile=getProfile(cursor);
-	  return profile;
+	  if(!cursor.moveToFirst()) return null;
+	  else  return getProfile(cursor);
    }
   
   public int getIdByUid(String uid) {
 	  SQLiteDatabase db = eventsData.getReadableDatabase();
 	  Cursor cursor = db.query(EventDataSQLHelper.TABLE, null, EventDataSQLHelper.UID+ " = "+ "'"+uid+"'", null, null, null, null);   
 	  startManagingCursor(cursor);
-	  cursor.moveToFirst();
-	  return  cursor.getInt(0);
+	  if(!cursor.moveToFirst()) return -1;
+	  else  return cursor.getInt(0);
    }
   
   public void setAccessToken(String access_token){
@@ -173,6 +172,7 @@ public class FbQrDatabase extends Activity{
    
    private void copyProfile(FbQrProfile data){
 	   FbQrProfile old = getProfile(data.uid);
+	   if(old==null) return;
 	   if(data.phone==null) data.phone=old.phone;
 	   if(data.address==null) data.address=old.address;
 	   if(data.display==null) data.display=old.display;
