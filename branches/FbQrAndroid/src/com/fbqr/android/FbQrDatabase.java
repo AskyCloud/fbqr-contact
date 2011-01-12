@@ -65,6 +65,8 @@ public class FbQrDatabase extends Activity{
 		  updated=db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.PHONE+ " = " +"'"+ data.phone+"'", null );		  
 	  }
 	  else {
+		  //Bug
+		  copyProfile(data);
 		  updated=db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.UID+ " = " + "'"+data.uid+"'", null);
 		  if(updated==0) updated=db.update(EventDataSQLHelper.TABLE, addValues(data), EventDataSQLHelper.PHONE+ " = " +"'"+ data.phone+"'", null );
 	  }
@@ -168,4 +170,16 @@ public class FbQrDatabase extends Activity{
     }
     return ret.toString();
   }   
+   
+   private void copyProfile(FbQrProfile data){
+	   FbQrProfile old = getProfile(data.uid);
+	   if(data.phone==null) data.phone=old.phone;
+	   if(data.address==null) data.address=old.address;
+	   if(data.display==null) data.display=old.display;
+	   if(data.email==null) data.email=old.email;
+	   if(data.name==null) data.name=old.name;
+	   if(data.password==null) data.password=old.password;
+	   if(data.status==null) data.status=old.status;
+	   if(data.website==null) data.website=old.website;	   
+   }
 }

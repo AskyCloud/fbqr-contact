@@ -28,6 +28,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -336,43 +337,67 @@ public class FbQrBackground extends Activity{
 		}
 		
 		private void saveDisplay(String fileUrl,String uid){
-            String PATH = "/data/data/com.fbqr.android/files/";  
-            
-            URL myFileUrl =null; 
-            Bitmap bmImg;
-            if(fileUrl==null||uid==null) return;
-            try {
-                    myFileUrl= new URL(fileUrl);
-            } catch (MalformedURLException e) {             
-                    e.printStackTrace();
-            }
-            try {
-                    HttpURLConnection conn= (HttpURLConnection)myFileUrl.openConnection();
-                    conn.setDoInput(true);
-                    conn.connect();
-                    //int length = conn.getContentLength();
-                    //int[] bitmapData =new int[length];
-                    //byte[] bitmapData2 =new byte[length];
-                    InputStream is = conn.getInputStream();
-            
-                    bmImg= BitmapFactory.decodeStream(is);
-                    
-                    OutputStream outStream = null;
-                    File dir = new File(PATH);
-                    dir.mkdirs();
-                    File file = new File(PATH,uid+".PNG");
-                       
-                    outStream = new FileOutputStream(file);
-                    bmImg.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                    outStream.flush();
-                    outStream.close();
-                       
-                    //Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
-            } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-            }
-    }
+			String PATH = "/data/data/com.fbqr.android/files/";  
+			
+			URL myFileUrl =null; 
+			Bitmap bmImg,resizedbmImg = null;
+			if(fileUrl==null||uid==null) return;
+			try {
+				myFileUrl= new URL(fileUrl);
+			} catch (MalformedURLException e) {		
+				e.printStackTrace();
+			}
+			try {
+				HttpURLConnection conn= (HttpURLConnection)myFileUrl.openConnection();
+				conn.setDoInput(true);
+				conn.connect();
+				//int length = conn.getContentLength();
+				//int[] bitmapData =new int[length];
+				//byte[] bitmapData2 =new byte[length];
+				InputStream is = conn.getInputStream();
+			
+				bmImg= BitmapFactory.decodeStream(is);
+				
+				//Resize to 50x50
+	            
+	            int width = bmImg.getWidth();
+	            int height = bmImg.getWidth();
+	            
+	            if(width!=50&&height!=50){
+	                int newWidth = 50;
+	                int newHeight = 50;
+	               
+	                // calculate the scale - in this case = 0.4f
+	                float scaleWidth = ((float) newWidth) / width;
+	                float scaleHeight = ((float) newHeight) / height;
+	               
+	                Matrix matrix = new Matrix(); // createa matrix for the manipulation
+	                matrix.postScale(scaleWidth, scaleHeight);  // resize the bit map
+	                matrix.postRotate(0);  // rotate the Bitmap
+	                
+	             // recreate the new Bitmap
+	                resizedbmImg = Bitmap.createBitmap(bmImg, 0, 0,width, height, matrix, true);
+	            
+	            }
+				
+				OutputStream outStream = null;
+				File dir = new File(PATH);
+				dir.mkdirs();
+				File file = new File(PATH,uid+".PNG");
+				   
+				outStream = new FileOutputStream(file);
+				if(width!=50&&height!=50) resizedbmImg.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+				else bmImg.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+				
+				outStream.flush();
+				outStream.close();
+				   
+				//Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		private void askPasswordforMultiQR() { 
 
