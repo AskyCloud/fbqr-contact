@@ -33,6 +33,11 @@
 			<action android:name="android.intent.action.contactlayout_edit" />
 			</intent-filter>
 		 </activity>
+		 <activity android:name=".FbQrContactlistFav" android:screenOrientation="portrait">
+		 	<intent-filter>
+			<action android:name="android.intent.action.contactlayout" />
+			</intent-filter>
+		 </activity>
 		 <activity android:name=".FbQrDisplayProfile" android:screenOrientation="portrait">
 		 	<intent-filter>
 			<action android:name="android.intent.action.user" />

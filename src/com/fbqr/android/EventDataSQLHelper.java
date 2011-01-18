@@ -9,11 +9,12 @@ import android.util.Log;
 /** Helper to the database, manages versions and creation */
 public class EventDataSQLHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "fbqrdb.db";
-	private static final int DATABASE_VERSION = 18;
+	private static final int DATABASE_VERSION = 19;
 
 	// Table name
 	public static final String TABLE = "profiles";
 	public static final String cfgTABLE = "config";
+	public static final String favTABLE = "favorite";
 
 	// Columns
 	public static final String ID = BaseColumns._ID;
@@ -53,18 +54,23 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 		sql = "create table " + cfgTABLE + "(" + BaseColumns._ID
 				+ " integer primary key autoincrement, " +ACCESS_TOKEN + " text);";
 		db.execSQL(sql);
+		sql = "create table " + favTABLE + "(" + BaseColumns._ID
+		+ " integer primary key autoincrement, " +UID + " text not null);";
+		db.execSQL(sql);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS "+TABLE); 
 		db.execSQL("DROP TABLE IF EXISTS "+cfgTABLE); 
+		db.execSQL("DROP TABLE IF EXISTS "+favTABLE); 
         onCreate(db); 
 	}
 	
 	public void delete(SQLiteDatabase db) {
 		db.execSQL("DROP TABLE IF EXISTS "+TABLE); 
 		db.execSQL("DROP TABLE IF EXISTS "+cfgTABLE); 
+		db.execSQL("DROP TABLE IF EXISTS "+favTABLE); 
         onCreate(db); 
 	}
 }

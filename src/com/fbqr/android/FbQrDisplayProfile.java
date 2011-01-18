@@ -209,11 +209,13 @@ public class FbQrDisplayProfile extends Activity{
 		startActivity(intent);
 	}
 	
-	private static final int pwdBtnId = Menu.FIRST;
-	
+	private static final int favBtnId = Menu.FIRST;
+	private static final int pwdBtnId = Menu.FIRST+1;
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0,favBtnId ,favBtnId,"Favorite");
 		menu.add(0,pwdBtnId ,pwdBtnId,"Password");
+		
 	    return super.onCreateOptionsMenu(menu);
 	  }
 	
@@ -230,6 +232,9 @@ public class FbQrDisplayProfile extends Activity{
 	    switch (item.getItemId()) {
 	    case pwdBtnId:
 	    	showAddDialog(); 
+	        return true;
+	    case favBtnId:
+	    	db.addFavorite(profile.uid);
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);

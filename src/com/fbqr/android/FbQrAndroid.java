@@ -61,6 +61,12 @@ public class FbQrAndroid extends TabActivity{
 	       Intent intent;  // Reusable Intent for each tab
 	       
 	       //Add Tab
+	       intent = new Intent().setClass(this, FbQrContactlistFav.class);
+	       spec = tabHost.newTabSpec("contact").setIndicator("Favorite",
+	                         res.getDrawable(R.drawable.contact_tab))
+	                     .setContent(intent);
+	       tabHost.addTab(spec);
+	       
 		   intent = new Intent().setClass(this, FbQrContactlist.class);
 	       spec = tabHost.newTabSpec("contact").setIndicator("Contact",
 	                         res.getDrawable(R.drawable.contact_tab))
@@ -78,9 +84,9 @@ public class FbQrAndroid extends TabActivity{
 	       spec = tabHost.newTabSpec("readqr").setIndicator("ReadQR",
 	                         res.getDrawable(R.drawable.barcodescan_tab))
 	                     .setContent(intent);	     
-	       tabHost.addTab(spec);	       
-     
-	       //setMainTab
+	       tabHost.addTab(spec);	   
+	       
+           //setMainTab
 	       tabHost.setCurrentTab(0); 	       
 	   }
 	   public void onStop(Bundle savedInstanceState) {
