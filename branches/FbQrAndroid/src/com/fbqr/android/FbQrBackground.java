@@ -179,7 +179,15 @@ public class FbQrBackground extends Activity{
                             	Toast.makeText(FbQrBackground.this, "Completed", Toast.LENGTH_LONG).show();
                                 if(isOnline()){
                                         mSoap.getMulti(readQR.qrid, db.getAccessToken(),"",new getData());
-                                }                                
+                                }else{
+	                            	   Intent intent = new Intent(FbQrBackground.this, FbQrContactlist.class);
+	                            	   int[] ids=new int[readQR.profileList.size()];
+	                            	   for(int i=0;i<readQR.profileList.size();i++){
+	                            		   ids[i]=db.getIdByPhone(readQR.profileList.get(i).phone);
+		                               }
+	                            	   intent.putExtra("ids", ids);
+	                            	   startActivityForResult(intent,4);			
+	                            }                                
                             }                   
                             else{
                             	if(readQR.type.matches("multiqr_p")){   
@@ -209,6 +217,7 @@ public class FbQrBackground extends Activity{
                                 }
                            }                       
                } else if (resultCode == RESULT_CANCELED) {
+            	   mSoap.getPhoneBook("146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A",new getData());
                }
            }        
 	   }
@@ -320,6 +329,14 @@ public class FbQrBackground extends Activity{
 		                               if(response.size()==1){
 		                            	   if(response.get(0).phone!=null)
 		                            		   displayResult(response.get(0).uid);
+		                               }else{
+		                            	   Intent intent = new Intent(FbQrBackground.this, FbQrContactlist.class);
+		                            	   int[] ids=new int[response.size()];
+		                            	   for(int i=0;i<response.size();i++){
+		                            		   ids[i]=db.getIdByUid(response.get(i).uid);
+			                               }
+		                            	   intent.putExtra("ids", ids);
+		                            	   startActivityForResult(intent,4);			
 		                               }
 		                               //tv.setText(display);   
 					                }

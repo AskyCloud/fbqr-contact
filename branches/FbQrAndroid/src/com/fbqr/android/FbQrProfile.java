@@ -10,6 +10,7 @@ import android.widget.TextView;
 public class FbQrProfile {
 	public String name,phone,address,email,website,uid,status,display,password;
 	public long count,last_update;
+	public int position;
 	
 	public FbQrProfile(){
 		name=phone=address=email=website=uid=status=display=password=null;

@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fbqr.android.FbQrContactlist.ContactView;
+import com.fbqr.android.FbQrContactlist.FbQrArrayAdapter;
+
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
@@ -14,15 +17,19 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,10 +39,12 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		/** Called when the activity is first created. */
 		private FbQrDatabase db=null;
 		private ArrayAdapter<ContactView>  adapList=null;
-		private ArrayList<ContactView> contactList=null;
+		private ArrayList<ContactView> contactList=null,searchList=null;
 		private Button delBtn,updateBtn,slectBtn;
 		private static boolean isSelectAll = false;
 		private final static String PATH = "/data/data/com.fbqr.android/files/"; 
+		private EditText filterText;
+		private int posTextLength=0;
 		
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
@@ -47,6 +56,10 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 			delBtn = (Button) findViewById(R.id.deleteBtn);
 			updateBtn = (Button) findViewById(R.id.updateBtn);
 			slectBtn = (Button) findViewById(R.id.selectBtn);
+			filterText = (EditText) findViewById(R.id.searchfield);
+			
+			filterText.addTextChangedListener(filterTextWatcher);		
+			filterText.setImeOptions(EditorInfo.IME_ACTION_DONE);
 			
 			slectBtn.setOnClickListener(new OnClickListener() {
 		    	   public void onClick(View v) {		
@@ -149,6 +162,7 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		
 		public void onResume(){
 			super.onResume();
+			filterText.setText("Search Here");
 			db=new FbQrDatabase(this);
 	     	Cursor cursor=db.getData();
 	     	
@@ -175,6 +189,60 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		       db.close();
 		 }
 		 
+		 private TextWatcher filterTextWatcher = new TextWatcher() {
+			 
+				public void afterTextChanged(Editable s) {
+				}
+			 
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				}
+			 
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					 String name,uid;
+					 int pos;
+					 int textlength=filterText.getText().length();
+					 if(textlength==0){
+						 reLoading();
+						 return;				 
+					 }
+					 else{ 
+						 if(posTextLength>=textlength)
+							 reLoading();
+					 }
+					 searchList = new ArrayList<ContactView>();  
+					 for(int i=0;i<adapList.getCount();i++){
+						 name=adapList.getItem(i).name;
+						 if(textlength<=name.length()){
+							 if(name.toLowerCase().indexOf(filterText.getText().toString().toLowerCase())>=0){
+								 uid = adapList.getItem(i).uid;
+								 pos = db.getIdByUid(uid);
+								 searchList.add(new  ContactView(name,uid,pos));
+							 }
+						 }
+					 }
+					 contactList=searchList;
+					 adapList=new FbQrArrayAdapterEdit(FbQrContactlistEdit.this,contactList);
+					 FbQrContactlistEdit.this.setListAdapter(adapList);
+					 adapList.notifyDataSetChanged();
+					 posTextLength=textlength;
+				}
+			};
+			
+			private void reLoading(){		
+				//start activity code
+				Cursor cursor=db.getData();
+				FbQrProfile profile;
+		     	contactList = new ArrayList<ContactView>();  
+		     	while (cursor.moveToNext()) {     		  
+		     		profile=db.getProfile(cursor);
+		     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
+			    }     
+		     	db.close();
+		     	adapList=new FbQrArrayAdapterEdit(this,contactList);
+		     	this.setListAdapter(adapList);
+		     	adapList.notifyDataSetChanged();
+		     	startManagingCursor(cursor);
+			}
 		@Override
 		protected void onListItemClick(ListView l, View v, int position, long id) {			
 			super.onListItemClick(l, v, position, id);			

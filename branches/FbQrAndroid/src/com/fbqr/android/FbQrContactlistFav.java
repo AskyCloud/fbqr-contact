@@ -53,12 +53,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FbQrContactlist extends ListActivity {
+public class FbQrContactlistFav extends ListActivity {
 	/** Called when the activity is first created. */
 	private FbQrDatabase db=null;
 	private ArrayAdapter<ContactView>  adapList=null;
 	private ArrayList<ContactView> contactList=null,searchList=null;
-	private SOAPConnected mSoap = new SOAPConnected(FbQrContactlist.this);
+	private SOAPConnected mSoap = new SOAPConnected(FbQrContactlistFav.this);
 	private EditText filterText;
 	private int posTextLength=0;
 	
@@ -74,24 +74,14 @@ public class FbQrContactlist extends ListActivity {
 	public void onStart(){
 		super.onStart();
 		db=new FbQrDatabase(this);
-		Bundle extras = getIntent().getExtras();
-		 if(extras !=null){
-			 int[] ids= extras.getIntArray("ids"); 
-			 showGroup(ids);
-		 }
-		 else reLoading();
+		reLoading();
 	}
 	
 	public void onResume(){
 		super.onResume();
 		filterText.setText("Search Here");
 		db=new FbQrDatabase(this);
-			Bundle extras = getIntent().getExtras();
-		 if(extras !=null){
-			 int[] ids= extras.getIntArray("ids"); 
-			 showGroup(ids);
-		 }
-		 else reLoading();
+		reLoading();
 	}
 	
 	 public void onPause(){
@@ -136,8 +126,8 @@ public class FbQrContactlist extends ListActivity {
 					 }
 				 }
 				 contactList=searchList;
-				 adapList=new FbQrArrayAdapter(FbQrContactlist.this,contactList);
-				 FbQrContactlist.this.setListAdapter(adapList);
+				 adapList=new FbQrArrayAdapter(FbQrContactlistFav.this,contactList);
+				 FbQrContactlistFav.this.setListAdapter(adapList);
 				 adapList.notifyDataSetChanged();
 				 posTextLength=textlength;
 			}
@@ -178,7 +168,7 @@ public class FbQrContactlist extends ListActivity {
 	
 	private void reLoading(){		
 		//start activity code
-		Cursor cursor=db.getData();
+		Cursor cursor=db.getFavorite();
 		FbQrProfile profile;
      	contactList = new ArrayList<ContactView>();  
      	while (cursor.moveToNext()) {     		  
@@ -391,7 +381,7 @@ public class FbQrContactlist extends ListActivity {
 			// TODO Auto-generated method stub
 			try {
 				
-				FbQrContactlist.this.runOnUiThread(new Runnable() {
+				FbQrContactlistFav.this.runOnUiThread(new Runnable() {
                     public void run() {
                        FbQrProfile x;
      				   for(int i=0;i<response.size();i++){
@@ -399,7 +389,7 @@ public class FbQrContactlist extends ListActivity {
      					    x=response.get(i);
      					    saveDisplay(x.display,x.uid);
      			       }
-     				   Toast.makeText(FbQrContactlist.this,"Download Completed", Toast.LENGTH_LONG).show();      
+     				   Toast.makeText(FbQrContactlistFav.this,"Download Completed", Toast.LENGTH_LONG).show();      
      				   reLoading();
                     }
                 });
@@ -410,7 +400,7 @@ public class FbQrContactlist extends ListActivity {
 		}	
 		public void onError(String e)
 		{
-         	 Toast.makeText(FbQrContactlist.this, e.toString(), Toast.LENGTH_LONG).show();
+         	 Toast.makeText(FbQrContactlistFav.this, e.toString(), Toast.LENGTH_LONG).show();
 		}
    }
    
