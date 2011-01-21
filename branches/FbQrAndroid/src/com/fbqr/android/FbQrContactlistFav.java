@@ -79,7 +79,6 @@ public class FbQrContactlistFav extends ListActivity {
 	
 	public void onResume(){
 		super.onResume();
-		filterText.setText("Search Here");
 		db=new FbQrDatabase(this);
 		reLoading();
 	}
