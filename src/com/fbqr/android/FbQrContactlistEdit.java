@@ -162,7 +162,6 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		
 		public void onResume(){
 			super.onResume();
-			filterText.setText("Search Here");
 			db=new FbQrDatabase(this);
 	     	Cursor cursor=db.getData();
 	     	

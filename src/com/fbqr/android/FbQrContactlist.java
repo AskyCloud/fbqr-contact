@@ -74,24 +74,13 @@ public class FbQrContactlist extends ListActivity {
 	public void onStart(){
 		super.onStart();
 		db=new FbQrDatabase(this);
-		Bundle extras = getIntent().getExtras();
-		 if(extras !=null){
-			 int[] ids= extras.getIntArray("ids"); 
-			 showGroup(ids);
-		 }
-		 else reLoading();
+		reLoading();
 	}
 	
 	public void onResume(){
 		super.onResume();
-		filterText.setText("Search Here");
 		db=new FbQrDatabase(this);
-			Bundle extras = getIntent().getExtras();
-		 if(extras !=null){
-			 int[] ids= extras.getIntArray("ids"); 
-			 showGroup(ids);
-		 }
-		 else reLoading();
+		reLoading();
 	}
 	
 	 public void onPause(){
@@ -192,20 +181,6 @@ public class FbQrContactlist extends ListActivity {
      	startManagingCursor(cursor);
 	}
 	
-	private void showGroup(int[] ids){		
-		//start activity code
-		FbQrProfile profile=null;
-     	contactList = new ArrayList<ContactView>();  
-     	for(int i:ids) {    
-     		profile=db.getProfile(i);
-     		contactList.add(new  ContactView(profile.name,profile.uid,profile.position));
-	    }     
-     	db.close();
-     	adapList=new FbQrArrayAdapter(this,contactList);
-     	this.setListAdapter(adapList);
-     	adapList.notifyDataSetChanged();
-	}
-
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {		
 		super.onListItemClick(l, v, position, id);

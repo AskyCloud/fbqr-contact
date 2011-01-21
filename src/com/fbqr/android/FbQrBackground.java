@@ -180,7 +180,7 @@ public class FbQrBackground extends Activity{
                                 if(isOnline()){
                                         mSoap.getMulti(readQR.qrid, db.getAccessToken(),"",new getData());
                                 }else{
-	                            	   Intent intent = new Intent(FbQrBackground.this, FbQrContactlist.class);
+	                            	   Intent intent = new Intent(FbQrBackground.this, FbQrContactlistGroup.class);
 	                            	   int[] ids=new int[readQR.profileList.size()];
 	                            	   for(int i=0;i<readQR.profileList.size();i++){
 	                            		   ids[i]=db.getIdByPhone(readQR.profileList.get(i).phone);
@@ -217,7 +217,7 @@ public class FbQrBackground extends Activity{
                                 }
                            }                       
                } else if (resultCode == RESULT_CANCELED) {
-            	   mSoap.getPhoneBook("146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A",new getData());
+            	   mSoap.getMulti("17","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A","",new getData());
                }
            }        
 	   }
@@ -318,26 +318,31 @@ public class FbQrBackground extends Activity{
 	                            FbQrBackground.this.runOnUiThread(new Runnable() {
 					                public void run() {
 						               FbQrProfile x;
-		                               for(int i=0;i<response.size();i++){
+		                               for(int i=(response.size()>1)?1:0;i<response.size();i++){
 		                            	   x=response.get(i);
 		                                   db.addData(x);                                       
 		                                   saveDisplay(x.display,x.uid);
 		                                    //display+=x.show()+"\n";
 		                               }
-		                               //db.close();
-		                               Toast.makeText(FbQrBackground.this, "Download Completed", Toast.LENGTH_LONG).show();
-		                               if(response.size()==1){
-		                            	   if(response.get(0).phone!=null)
-		                            		   displayResult(response.get(0).uid);
-		                               }else{
-		                            	   Intent intent = new Intent(FbQrBackground.this, FbQrContactlist.class);
-		                            	   int[] ids=new int[response.size()];
-		                            	   for(int i=0;i<response.size();i++){
-		                            		   ids[i]=db.getIdByUid(response.get(i).uid);
+		                               //db.close();		                               
+		                               if(response.size()>0){
+		                            	   Toast.makeText(FbQrBackground.this, "Download Completed", Toast.LENGTH_LONG).show();
+			                               if(response.size()==1){
+			                            	   if(response.get(0).phone!=null)
+			                            		   displayResult(response.get(0).uid);
+			                               }else{
+			                            	   Intent intent = new Intent(FbQrBackground.this, FbQrContactlistGroup.class);
+			                            	   int[] ids=new int[response.size()-1];
+			                            	   for(int i=1;i<response.size();i++){
+			                            		   ids[i-1]=db.getIdByUid(response.get(i).uid);
+				                               }
+			                            	   if(response.get(0).name!=null) intent.putExtra("name", response.get(0).name);
+			                            	   if(response.get(0).uid!=null) intent.putExtra("gid", response.get(0).uid);
+			                            	   if(response.get(0).display!=null) intent.putExtra("display", response.get(0).display);
+			                            	   intent.putExtra("ids", ids);
+			                            	   startActivityForResult(intent,4);			
 			                               }
-		                            	   intent.putExtra("ids", ids);
-		                            	   startActivityForResult(intent,4);			
-		                               }
+		                               }else Toast.makeText(FbQrBackground.this, "There is nothing", Toast.LENGTH_LONG).show();
 		                               //tv.setText(display);   
 					                }
                              });
