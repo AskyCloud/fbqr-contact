@@ -26,7 +26,7 @@ public class SOAPConnected {
 	        protected static final String TAG = "SOAPConnected";
 	        
 	        private static final String NAMESPACE = "urn:fbqrwsdl";
-	        private static final String URL = "http://tkroputa.in.th/fbqr/webservice/t1_server.php";
+	        private static final String URL = "http://tkroputa.in.th/fbqr/webservice/t2_server.php";	//t2 for test
 	        private boolean status;
 	        private Activity act;
 	        	        
@@ -36,6 +36,25 @@ public class SOAPConnected {
 	                       
 	        public SOAPConnected(Activity act){
 	        	this.act=act;	       
+	        	
+	        }
+	        
+	        public void getGroup(String gid,String access_token,final SoapConnectedListener listener){
+	        	final String method = "getGroup";
+	        	profileList.clear();
+	        	final SoapObject request = new SoapObject(NAMESPACE, method);
+	        	request.addProperty("qrid", gid);
+	        	request.addProperty("access_token", access_token);
+	        	status=false;
+	        	new Thread() {
+	        		public void run() {
+	        			connect(method,request);
+	        			mHandler.post(mUpdateResults);
+	        			listener.onComplete(profileList);	        				        				        			
+	        		}
+	        	}.start();
+	        	
+	        	updateStartedInUI(); 
 	        	
 	        }
 	        

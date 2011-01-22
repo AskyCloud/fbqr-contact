@@ -11,6 +11,7 @@ public class ReadFbQR{
 	public String type;
 	public String name;
 	public String qrid;
+	public String gid;
 	public String qrtext;
 	
 	public void read(String qrtext){
@@ -71,10 +72,14 @@ public class ReadFbQR{
 			}
 			else if(type.matches("multiqr_n")){
 				addMultiProfile(str);
+			}else if(type.matches("group_qr")){
+				this.name=str[3].replaceFirst("GN:","");
+				this.gid=str[4].replaceFirst("GID:","");
 			}
 		}
 		return true;
 	}
+	
 	
 	private boolean addMultiProfile(String[] str){
 		return addMultiProfile(str,"");

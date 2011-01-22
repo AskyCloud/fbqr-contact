@@ -145,37 +145,13 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 			super.onStart();
 			//start activity code
 			db=new FbQrDatabase(this);
-	     	Cursor cursor=db.getData();
-	     	
-	     	FbQrProfile profile;
-	     	contactList = new ArrayList<ContactView>();  
-	     	while (cursor.moveToNext()) {     		  
-	     		profile=db.getProfile(cursor);
-	     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
-		    
-	     	}
-	     	db.close();
-	     	adapList=new FbQrArrayAdapterEdit(this,contactList);
-	     	this.setListAdapter(adapList);
-	     	startManagingCursor(cursor);
+			reLoading();
 		}
 		
 		public void onResume(){
 			super.onResume();
 			db=new FbQrDatabase(this);
-	     	Cursor cursor=db.getData();
-	     	
-	     	FbQrProfile profile;
-	     	contactList = new ArrayList<ContactView>();  
-	     	while (cursor.moveToNext()) {     		  
-	     		profile=db.getProfile(cursor);
-	     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
-		    
-	     	}
-	     	db.close();
-	     	adapList=new FbQrArrayAdapterEdit(this,contactList);
-	     	this.setListAdapter(adapList);
-	     	startManagingCursor(cursor);
+			reLoading();
 		}
 		
 		 public void onPause(){

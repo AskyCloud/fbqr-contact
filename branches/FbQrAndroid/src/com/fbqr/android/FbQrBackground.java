@@ -162,12 +162,12 @@ public class FbQrBackground extends Activity{
 		//Result of QRscan
           if (requestCode == 2) {
 
-                            if (resultCode == RESULT_OK) {
-        	  				
+                          	if (resultCode == RESULT_OK) {
+                           //if (resultCode == RESULT_CANCELED){
                                 // Handle successful scan
-                                       
-                            String contents = data.getStringExtra("SCAN_RESULT"); 
-        	            
+                            String contents = data.getStringExtra("SCAN_RESULT");        
+                            //String contents = "MECARD:N:FbQRContact;URL:http://apps.facebook.com/fbqrcontact;TYPE:group_qr;GN:blabla;GID:177648985606389;";
+                           // db.setAccessToken("146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A");
                             readQR.read(contents);
                             //Reject unknow type QR
                             if(readQR.type.matches("etc")) Toast.makeText(FbQrBackground.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
@@ -191,9 +191,18 @@ public class FbQrBackground extends Activity{
                             }                   
                             else{
                             	if(readQR.type.matches("multiqr_p")){   
+                            		db.addGroup("m"+readQR.gid,readQR.name,null, null);
                             		if(isOnline()){
                             			askPasswordforMultiQR();                                        
                             		}else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();      
+                            	}else if(readQR.type.matches("group_qr")){
+                            		db.addGroup(readQR.gid,readQR.name,null, null);
+                            		if(isOnline()){
+                            			mSoap.getGroup(readQR.gid,db.getAccessToken(),new getData());             
+                            			
+                            		}else {
+                            			Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();                              		
+                            		}
                             	}
                                 else{
                                     //add data to db
@@ -217,7 +226,9 @@ public class FbQrBackground extends Activity{
                                 }
                            }                       
                } else if (resultCode == RESULT_CANCELED) {
-            	   mSoap.getMulti("17","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A","",new getData());
+            	   //mSoap.getMulti("17","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A","",new getData());
+            	   //mSoap.getGroup("175483529136581","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A",new getData());
+            	   //mSoap.getGroup("177648985606389","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A",new getData());
                }
            }        
 	   }
@@ -304,6 +315,16 @@ public class FbQrBackground extends Activity{
             @Override
             public void onComplete(final ArrayList<FbQrProfile> response) {
                     // TODO Auto-generated method stub\
+            	if(response.size()==1&&response.get(0).name.matches("you are not the member")){
+       				final String errCode = response.get(0).uid;
+       				
+        			FbQrBackground.this.runOnUiThread(new Runnable() {
+		                public void run() {
+		                		Toast.makeText(FbQrBackground.this, "you are not the member", Toast.LENGTH_LONG).show();
+		                		if(errCode.matches("-1")||errCode.matches("-2")) Openweb(response.get(0).website);
+		                }
+                    });
+        		}else
            		if(response.size()==1&&response.get(0).uid.matches("wrong password")){
             			FbQrBackground.this.runOnUiThread(new Runnable() {
 			                public void run() {
@@ -332,13 +353,24 @@ public class FbQrBackground extends Activity{
 			                            		   displayResult(response.get(0).uid);
 			                               }else{
 			                            	   Intent intent = new Intent(FbQrBackground.this, FbQrContactlistGroup.class);
-			                            	   int[] ids=new int[response.size()-1];
+			                            	   int[] ids = new int[response.size()-1];
+			                            	   String[] uids = new String[response.size()-1];
 			                            	   for(int i=1;i<response.size();i++){
-			                            		   ids[i-1]=db.getIdByUid(response.get(i).uid);
+			                            		   ids[i-1] = db.getIdByUid(response.get(i).uid);
+			                            		   uids[i-1] = response.get(i).uid;
 				                               }
 			                            	   if(response.get(0).name!=null) intent.putExtra("name", response.get(0).name);
-			                            	   if(response.get(0).uid!=null) intent.putExtra("gid", response.get(0).uid);
-			                            	   if(response.get(0).display!=null) intent.putExtra("display", response.get(0).display);
+			                            	   if(response.get(0).uid!=null){
+			                            		   intent.putExtra("gid", response.get(0).uid);			                            		   
+			                            	   }
+			                            	   if(response.get(0).display!=null){
+			                            		   saveDisplay(response.get(0).display,response.get(0).uid);
+			                            		   intent.putExtra("display", response.get(0).display);
+			                            	   }
+			                            	   if(response.get(0).website!=null){
+			                            		   intent.putExtra("website", response.get(0).website);
+			                            	   }
+			                            	   db.addGroup(response.get(0).uid,response.get(0).name,response.get(0).website, uids);
 			                            	   intent.putExtra("ids", ids);
 			                            	   startActivityForResult(intent,4);			
 			                               }
@@ -358,6 +390,7 @@ public class FbQrBackground extends Activity{
 			}
 		}
 		
+
 		private void saveDisplay(String fileUrl,String uid){
 			String PATH = "/data/data/com.fbqr.android/files/";  
 			
@@ -464,5 +497,11 @@ public class FbQrBackground extends Activity{
      	   	Intent intent = new Intent(this, FbQrDisplayProfile.class);     	   	;
   			intent.putExtra("ID", db.getIdByUid(uid));
   			startActivityForResult(intent,4);			
+		}
+		void Openweb(String Url){
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			Uri data = Uri.parse(Url);
+			intent.setData(data);
+			startActivity(intent);
 		}
 }

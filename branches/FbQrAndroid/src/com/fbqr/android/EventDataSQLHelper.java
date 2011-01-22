@@ -9,16 +9,19 @@ import android.util.Log;
 /** Helper to the database, manages versions and creation */
 public class EventDataSQLHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "fbqrdb.db";
-	private static final int DATABASE_VERSION = 19;
+	private static final int DATABASE_VERSION = 23;
 
 	// Table name
 	public static final String TABLE = "profiles";
 	public static final String cfgTABLE = "config";
 	public static final String favTABLE = "favorite";
+	public static final String grpTABLE = "groups";
 
 	// Columns
 	public static final String ID = BaseColumns._ID;
 	public static final String UID = "uid";
+	public static final String GID = "uid";
+	public static final String UIDS = "uids";
 	public static final String NAME = "name";
 	public static final String PHONE = "phone";
 	public static final String EMAIL = "email";
@@ -38,7 +41,8 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String sql = "create table " + TABLE + "( " + BaseColumns._ID
-				+ " integer primary key autoincrement, " + UID + " text,"
+				+ " integer primary key autoincrement, "
+				+ UID + " text,"
 				+ NAME + " text," 
 				+ PHONE + " text not null," 
 				+ EMAIL + " text,"
@@ -55,7 +59,15 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 				+ " integer primary key autoincrement, " +ACCESS_TOKEN + " text);";
 		db.execSQL(sql);
 		sql = "create table " + favTABLE + "(" + BaseColumns._ID
-		+ " integer primary key autoincrement, " +UID + " text not null);";
+			+ " integer primary key autoincrement, " 
+			+ UID + " text not null);";
+		db.execSQL(sql);
+		sql = "create table " + grpTABLE + "(" + BaseColumns._ID
+			+ " integer primary key autoincrement, " 
+			+ GID + " text not null,"
+			+ NAME + " text,"
+			+ WEBSITE + " text," 
+			+ UIDS + " text );";
 		db.execSQL(sql);
 	}
 
@@ -64,6 +76,7 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS "+TABLE); 
 		db.execSQL("DROP TABLE IF EXISTS "+cfgTABLE); 
 		db.execSQL("DROP TABLE IF EXISTS "+favTABLE); 
+		db.execSQL("DROP TABLE IF EXISTS "+grpTABLE); 
         onCreate(db); 
 	}
 	
@@ -71,6 +84,7 @@ public class EventDataSQLHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS "+TABLE); 
 		db.execSQL("DROP TABLE IF EXISTS "+cfgTABLE); 
 		db.execSQL("DROP TABLE IF EXISTS "+favTABLE); 
+		db.execSQL("DROP TABLE IF EXISTS "+grpTABLE); 
         onCreate(db); 
 	}
 }
