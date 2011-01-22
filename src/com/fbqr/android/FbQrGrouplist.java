@@ -14,6 +14,9 @@ import java.util.List;
 
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
+import com.fbqr.android.FbQrContactlist.ContactView;
+import com.fbqr.android.FbQrContactlist.FbQrArrayAdapter;
+
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -36,12 +39,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -56,12 +56,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FbQrContactlistFav extends ListActivity {
+public class FbQrGrouplist extends ListActivity {
 	/** Called when the activity is first created. */
 	private FbQrDatabase db=null;
 	private ArrayAdapter<ContactView>  adapList=null;
 	private ArrayList<ContactView> contactList=null,searchList=null;
-	private SOAPConnected mSoap = new SOAPConnected(FbQrContactlistFav.this);
+	private SOAPConnected mSoap = new SOAPConnected(FbQrGrouplist.this);
 	private EditText filterText;
 	private int posTextLength=0;
 	
@@ -69,12 +69,11 @@ public class FbQrContactlistFav extends ListActivity {
 		super.onCreate(savedInstanceState);
 		//UI
 		setContentView(R.layout.contactlayout);		
-		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		filterText = (EditText) findViewById(R.id.searchfield);
 		filterText.addTextChangedListener(filterTextWatcher);		
 		filterText.setImeOptions(EditorInfo.IME_ACTION_DONE);
 	}
-
+	
 	public void onStart(){
 		super.onStart();
 		db=new FbQrDatabase(this);
@@ -97,46 +96,7 @@ public class FbQrContactlistFav extends ListActivity {
 	       db.close();
 	 }
 	
-	 private TextWatcher filterTextWatcher = new TextWatcher() {
-		 
-			public void afterTextChanged(Editable s) {
-			}
-		 
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
-		 
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				 String name,uid;
-				 int pos;
-				 int textlength=filterText.getText().length();
-				 if(textlength==0){
-					 reLoading();
-					 return;				 
-				 }
-				 else{ 
-					 if(posTextLength>=textlength)
-						 reLoading();
-				 }
-				 searchList = new ArrayList<ContactView>();  
-				 for(int i=0;i<adapList.getCount();i++){
-					 name=adapList.getItem(i).name;
-					 if(textlength<=name.length()){
-						 if(name.toLowerCase().indexOf(filterText.getText().toString().toLowerCase())>=0){
-							 uid = adapList.getItem(i).uid;
-							 pos = db.getIdByUid(uid);
-							 searchList.add(new  ContactView(name,uid,pos));
-						 }
-					 }
-				 }
-				 contactList=searchList;
-				 adapList=new FbQrArrayAdapter(FbQrContactlistFav.this,contactList);
-				 FbQrContactlistFav.this.setListAdapter(adapList);
-				 adapList.notifyDataSetChanged();
-				 posTextLength=textlength;
-			}
-		};
-	 
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		  super.onActivityResult(requestCode, resultCode, data);
 		  if (requestCode == 2) { //login
 		  		if (resultCode == RESULT_OK) {
@@ -168,15 +128,54 @@ public class FbQrContactlistFav extends ListActivity {
 		  		}
 		  }
 	}
+	 
+	 private TextWatcher filterTextWatcher = new TextWatcher() {
+		 
+			public void afterTextChanged(Editable s) {
+			}
+		 
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+		 
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				 String name,gid;
+				 int pos;
+				 int textlength=filterText.getText().length();
+				 if(textlength==0){
+					 reLoading();
+					 return;				 
+				 }
+				 else{ 
+					 if(posTextLength>=textlength)
+						 reLoading();
+				 }
+				 searchList = new ArrayList<ContactView>();  
+				 for(int i=0;i<adapList.getCount();i++){
+					 name=adapList.getItem(i).name;
+					 if(textlength<=name.length()){
+						 if(name.toLowerCase().indexOf(filterText.getText().toString().toLowerCase())>=0){
+							 gid = adapList.getItem(i).gid;
+							 searchList.add(new  ContactView(name,gid,adapList.getItem(i).website,adapList.getItem(i).uids,adapList.getItem(i).pos));
+							 
+						 }
+					 }
+				 }
+				 contactList=searchList;
+				 adapList=new FbQrArrayAdapter(FbQrGrouplist.this,contactList);
+				 FbQrGrouplist.this.setListAdapter(adapList);
+				 adapList.notifyDataSetChanged();
+				 posTextLength=textlength;
+			}
+		};
 	
 	private void reLoading(){		
 		//start activity code
-		Cursor cursor=db.getFavorite();
-		FbQrProfile profile;
+		Cursor cursor=db.getGroup();
+		FbQrGroup group;
      	contactList = new ArrayList<ContactView>();  
      	while (cursor.moveToNext()) {     		  
-     		profile=db.getProfile(cursor);
-     		contactList.add(new  ContactView(profile.name,profile.uid,cursor.getInt(0)));
+     		group=db.getGroupData(cursor);
+     		contactList.add(new  ContactView(group.name,group.gid,group.website,group.uids,group.position));
 	    }     
      	db.close();
      	adapList=new FbQrArrayAdapter(this,contactList);
@@ -188,8 +187,21 @@ public class FbQrContactlistFav extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {		
 		super.onListItemClick(l, v, position, id);
-		Intent intent = new Intent(this, FbQrDisplayProfile.class);
-		intent.putExtra("ID", contactList.get(position).getId());
+		
+		String PATH = "/data/data/com.fbqr.android/files/"; 
+		
+		int[] ids = new int[ contactList.get(position).uids.length];
+ 	   	for(int i=0;i<ids.length;i++){
+ 		   ids[i] = db.getIdByUid(contactList.get(position).uids[i]);
+        }
+		
+		Intent intent = new Intent(this, FbQrContactlistGroup.class);
+		intent.putExtra("name",  contactList.get(position).name);
+		intent.putExtra("gid",  contactList.get(position).gid);
+		intent.putExtra("display", PATH+contactList.get(position).gid+".PNG" );
+		intent.putExtra("website", contactList.get(position).website );
+		intent.putExtra("ids", ids);
+		
 		startActivityForResult(intent,4);
 		
 	}
@@ -200,6 +212,7 @@ public class FbQrContactlistFav extends ListActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0,editBtnId ,editBtnId,"Edit");
 		if(db.getAccessToken()==null)
 			menu.add(0,loginBtnId ,loginBtnId,"Login");
 		else menu.add(0,logoutBtnId ,logoutBtnId,"Logout");
@@ -218,9 +231,14 @@ public class FbQrContactlistFav extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle item selection
+		
+	    // Handle item selection
 		Intent intent;
 	    switch (item.getItemId()) {
+	    case editBtnId:
+	    	intent= new Intent(this, FbQrGrouplistEdit.class);
+	    	startActivityForResult(intent,1);		
+	        return true;
 	    case loginBtnId:
 	    	intent = new Intent(this, FbQrBackground.class);
 	    	intent.putExtra("MODE", "login");
@@ -256,7 +274,7 @@ public class FbQrContactlistFav extends ListActivity {
 		   TextView textView = (TextView) convertView.findViewById( R.id.label );  
 		   ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
 	       	
-	       File img=new File(PATH+contact.getUid()+".PNG");
+	       File img=new File(PATH+contact.getGid()+".PNG");
 		   if(img.exists())
 		         imageView.setImageBitmap(BitmapFactory.decodeFile(img.getPath()));    
 
@@ -296,15 +314,25 @@ public class FbQrContactlistFav extends ListActivity {
 	
 	protected static class ContactView {  
 	    String name = "" ;  
-	    String uid = "" ;  
-	    int id;
+	    String gid = "";
+	    String website = "";
+	    String [] uids = null;
+	    int pos;
 	    boolean checked = false ;  
 	    public ContactView() {}  
-	    public ContactView( String name,String uid,int id ) {  
+	    public ContactView( String name,String gid,String[] uids,int pos ) {  
 	      this.name = name ;  
-	      this.uid = uid ; 
-	      this.id = id ; 
-	    }  
+	      this.gid = gid ; 
+	      this.uids = uids;
+	      this.pos = pos ; 
+	    } 
+	    public ContactView( String name,String gid,String website,String[] uids,int pos ) {  
+		      this.name = name ;  
+		      this.gid = gid ; 
+		      this.uids = uids;
+		      this.pos = pos ; 
+		      this.website = website;
+		} 
 	    public ContactView( String name, boolean checked ) {  
 	      this.name = name ;  
 	      this.checked = checked ;  
@@ -315,17 +343,20 @@ public class FbQrContactlistFav extends ListActivity {
 	    public void setName(String name) {  
 	      this.name = name;  
 	    }  
-	    public void setUid(String uid){
-	    	this.uid = uid;
+	    public void setGid(String gid){
+	    	this.gid = gid;
 	    }
-	    public String getUid(){
-	    	return uid;
+	    public String getGid(){
+	    	return gid;
 	    }
-	    public void setId(int id){
-	    	this.id = id;
+	    public void setPos(int pos){
+	    	this.pos = pos;
 	    }
 	    public int getId(){
-	    	return id;
+	    	return pos;
+	    }
+	    public String[] getUids(){
+	    	return uids;
 	    }
 	    public boolean isChecked() {  
 	      return checked;  
@@ -364,7 +395,7 @@ public class FbQrContactlistFav extends ListActivity {
 			// TODO Auto-generated method stub
 			try {
 				
-				FbQrContactlistFav.this.runOnUiThread(new Runnable() {
+				FbQrGrouplist.this.runOnUiThread(new Runnable() {
                     public void run() {
                        FbQrProfile x;
      				   for(int i=0;i<response.size();i++){
@@ -372,7 +403,7 @@ public class FbQrContactlistFav extends ListActivity {
      					    x=response.get(i);
      					    saveDisplay(x.display,x.uid);
      			       }
-     				   Toast.makeText(FbQrContactlistFav.this,"Download Completed", Toast.LENGTH_LONG).show();      
+     				   Toast.makeText(FbQrGrouplist.this,"Download Completed", Toast.LENGTH_LONG).show();      
      				   reLoading();
                     }
                 });
@@ -383,7 +414,7 @@ public class FbQrContactlistFav extends ListActivity {
 		}	
 		public void onError(String e)
 		{
-         	 Toast.makeText(FbQrContactlistFav.this, e.toString(), Toast.LENGTH_LONG).show();
+         	 Toast.makeText(FbQrGrouplist.this, e.toString(), Toast.LENGTH_LONG).show();
 		}
    }
    

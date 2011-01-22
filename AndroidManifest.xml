@@ -23,11 +23,21 @@
 			<action android:name="android.intent.action.web" />
 			</intent-filter>
 		</activity>
-		 <activity android:name=".FbQrContactlist" android:screenOrientation="portrait">
+		 <activity android:name=".FbQrGrouplist" android:screenOrientation="portrait">
 		 	<intent-filter>
 			<action android:name="android.intent.action.contactlayout" />
 			</intent-filter>
 		 </activity>
+		  <activity android:name=".FbQrGrouplistEdit" android:screenOrientation="portrait">
+		 	<intent-filter>
+			<action android:name="android.intent.action.contactlayout" />
+			</intent-filter>
+		 </activity>
+		 <activity android:name=".FbQrContactlist" android:screenOrientation="portrait">
+		 	<intent-filter>
+			<action android:name="android.intent.action.contactlayout" />
+			</intent-filter>
+		 </activity>		 
 		  <activity android:name=".FbQrContactlistEdit" android:screenOrientation="portrait">
 		 	<intent-filter>
 			<action android:name="android.intent.action.contactlayout_edit" />

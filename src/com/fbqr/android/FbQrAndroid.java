@@ -72,7 +72,13 @@ public class FbQrAndroid extends TabActivity{
 	                         res.getDrawable(R.drawable.contact_tab))
 	                     .setContent(intent);
 	       tabHost.addTab(spec);
-
+	       
+	       intent = new Intent().setClass(this, FbQrGrouplist.class);
+	       spec = tabHost.newTabSpec("contact").setIndicator("Group",
+	                         res.getDrawable(R.drawable.contact_tab))
+	                     .setContent(intent);
+	       tabHost.addTab(spec);
+	       
 	       intent = new Intent().setClass(this, FbQrWeb.class);
 	       spec = tabHost.newTabSpec("profile").setIndicator("Profile",
 	                         res.getDrawable(R.drawable.profile_tab))

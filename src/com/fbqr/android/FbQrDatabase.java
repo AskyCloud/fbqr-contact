@@ -46,9 +46,65 @@ public class FbQrDatabase extends Activity{
 	    values.put(EventDataSQLHelper.WEBSITE, data.website);
 	    values.put(EventDataSQLHelper.DISPLAY, data.display);
 	    values.put(EventDataSQLHelper.PASSWORD, data.password);
-	    return values;
-	   
+	    return values;	   
    }
+   
+   public void addGroup(String gid,String name,String website,String[] uids) {
+		  SQLiteDatabase db = eventsData.getWritableDatabase();
+		  String uidsText="";
+		  if(uids!=null){
+			  for(String i:uids){
+				  uidsText+=i+";";
+			  }
+		  }
+		  ContentValues values = new ContentValues();
+		  values.put(EventDataSQLHelper.GID,gid);
+		  values.put(EventDataSQLHelper.NAME,name);
+		  values.put(EventDataSQLHelper.WEBSITE,website);
+		  values.put(EventDataSQLHelper.UIDS,uidsText);
+		  if(updateGroup(gid,values)) return;		  
+		  else db.insert(EventDataSQLHelper.grpTABLE, null, values );   
+  }
+   
+   private boolean updateGroup(String gid,ContentValues values) {
+		  SQLiteDatabase db = eventsData.getWritableDatabase();
+		  int updated=0;
+		  if(gid!=null){
+			  updated=db.update(EventDataSQLHelper.grpTABLE, values, EventDataSQLHelper.GID+ " = " +"'"+gid+"'", null );		  
+		  }
+		  return updated>0;
+   }
+   
+   public Cursor getGroup() {
+		  SQLiteDatabase db = eventsData.getReadableDatabase();
+		  Cursor cursor = db.query(EventDataSQLHelper.grpTABLE, null, null, null, null, null,null); 
+		  startManagingCursor(cursor);
+		  return cursor;
+   }
+   
+   public FbQrGroup getGroupData(String gid) {
+		  SQLiteDatabase db = eventsData.getReadableDatabase();
+		  Cursor cursor = db.query(EventDataSQLHelper.grpTABLE, null, null, null, null, null,null); 
+		  if(!cursor.moveToFirst()) return null;
+		  else return getGroupData(cursor);
+   }
+   
+   public FbQrGroup getGroupData(Cursor cursor) {
+		  if(cursor==null) return null;
+		  FbQrGroup data=new FbQrGroup();
+		  data.position = cursor.getInt(0);
+		  data.gid=cursor.getString(1);
+		  data.name=cursor.getString(2);
+		  data.website=cursor.getString(3);
+		  data.uids=data.explode(cursor.getString(4));
+		  
+		  return data;
+   }
+	
+	public boolean removeGroup(String gid) {
+		   	SQLiteDatabase db = eventsData.getWritableDatabase();
+		   	return db.delete(EventDataSQLHelper.grpTABLE, EventDataSQLHelper.GID+ " = " + "'"+gid+"'", null)>0;	   	
+	}
    
    public void addFavorite(String uid) {
 		  SQLiteDatabase db = eventsData.getWritableDatabase();
@@ -64,7 +120,7 @@ public class FbQrDatabase extends Activity{
    }
    
    public Cursor getFavorite() {
-		  SQLiteDatabase db = eventsData.getReadableDatabase();
+		  SQLiteDatabase db = eventsData.getWritableDatabase();
 		  Cursor cursor = db.query(EventDataSQLHelper.favTABLE, null, null, null, null, null,null); 
 		  String cmd="";
 		  while (cursor.moveToNext()) {     		  

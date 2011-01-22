@@ -55,10 +55,11 @@ import android.widget.Toast;
 
 public class FbQrContactlistGroup extends ListActivity {
 	/** Called when the activity is first created. */
+	private final String PATH = "/data/data/com.fbqr.android/files/"; 
 	private FbQrDatabase db=null;
 	private ArrayAdapter<ContactView>  adapList=null;
 	private ArrayList<ContactView> contactList=null;
-	private String name,gid,display;
+	private String name,gid,display,website;
 	TextView groupName;
 	ImageView groupLogo;
 	
@@ -82,7 +83,29 @@ public class FbQrContactlistGroup extends ListActivity {
 			 }
 			 gid = extras.getString("gid");
 			 display = extras.getString("display");
+			 website = extras.getString("website");
+			 if(display != null){
+					File img=new File(PATH+gid+".PNG");
+				    if(img.exists())
+				    	groupLogo.setImageBitmap(BitmapFactory.decodeFile(img.getPath())); 
+				    	
+			 }
+			 
 			 int[] ids= extras.getIntArray("ids"); 
+			 if(website != null){
+			 groupLogo.setOnClickListener(new View.OnClickListener() {
+			    	
+		            public void onClick(View v) {
+		            	Openweb(website);
+		            }
+		        });
+			 groupName.setOnClickListener(new View.OnClickListener() {
+			    	
+		            public void onClick(View v) {
+		            	Openweb(website);
+		            }
+		        });
+			 }
 			 showGroup(ids);
 		 }
 	}
@@ -124,11 +147,12 @@ public class FbQrContactlistGroup extends ListActivity {
 		startActivityForResult(intent,4);		
 	}
 	
-	private static final int editBtnId = Menu.FIRST;
+	private static final int shareBtn = Menu.FIRST;
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    return super.onCreateOptionsMenu(menu);
+		 menu.add(0,shareBtn ,shareBtn,"Share to group");
+	    return super.onCreateOptionsMenu(menu);	   
 	  }
 	
 	@Override
@@ -252,4 +276,10 @@ public class FbQrContactlistGroup extends ListActivity {
 	      checked = !checked ;  
 	    }  
 	  }    
+	void Openweb(String Url){
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		Uri data = Uri.parse(Url);
+		intent.setData(data);
+		startActivity(intent);
+	}
 }
