@@ -63,7 +63,7 @@ public class FbQrAndroid extends TabActivity{
 	       //Add Tab
 	       intent = new Intent().setClass(this, FbQrContactlistFav.class);
 	       spec = tabHost.newTabSpec("contact").setIndicator("Favorite",
-	                         res.getDrawable(R.drawable.contact_tab))
+	                         res.getDrawable(R.drawable.favorite_tab))
 	                     .setContent(intent);
 	       tabHost.addTab(spec);
 	       
@@ -75,7 +75,7 @@ public class FbQrAndroid extends TabActivity{
 	       
 	       intent = new Intent().setClass(this, FbQrGrouplist.class);
 	       spec = tabHost.newTabSpec("contact").setIndicator("Group",
-	                         res.getDrawable(R.drawable.contact_tab))
+	                         res.getDrawable(R.drawable.group_tab))
 	                     .setContent(intent);
 	       tabHost.addTab(spec);
 	       
