@@ -58,6 +58,25 @@ public class SOAPConnected {
 	        	
 	        }
 	        
+	        public void share2Group(String gid,String privacy,String access_token,final SoapConnectedListener listener){
+	        	final String method = "share2Group";
+	        	profileList.clear();
+	        	final SoapObject request = new SoapObject(NAMESPACE, method);
+	        	request.addProperty("gid", gid);
+	        	request.addProperty("privacy", privacy);
+	        	request.addProperty("access_token", access_token);
+	        	status=false;
+	        	new Thread() {
+	        		public void run() {
+	        			connect(method,request);
+	        			mHandler.post(mUpdateResults);
+	        			listener.onComplete(profileList);	        				        				        			
+	        		}
+	        	}.start();
+	        	
+	        	updateStartedInUI();
+	        }
+	        
 	        public void getPhoneBook(String access_token,final SoapConnectedListener listener){
 	        	final String method = "getPhoneBook";
 	        	profileList.clear();

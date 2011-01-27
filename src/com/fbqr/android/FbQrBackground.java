@@ -167,7 +167,7 @@ public class FbQrBackground extends Activity{
                                 // Handle successful scan
                             String contents = data.getStringExtra("SCAN_RESULT");        
                             //String contents = "MECARD:N:FbQRContact;URL:http://apps.facebook.com/fbqrcontact;TYPE:group_qr;GN:blabla;GID:177648985606389;";
-                           // db.setAccessToken("146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A");
+                            //db.setAccessToken("146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A");
                             readQR.read(contents);
                             //Reject unknow type QR
                             if(readQR.type.matches("etc")) Toast.makeText(FbQrBackground.this, "FbQr not support this QRcode", Toast.LENGTH_LONG).show();
@@ -227,8 +227,8 @@ public class FbQrBackground extends Activity{
                            }                       
                } else if (resultCode == RESULT_CANCELED) {
             	   //mSoap.getMulti("17","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A","",new getData());
-            	   //mSoap.getGroup("175483529136581","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A",new getData());
-            	   //mSoap.getGroup("177648985606389","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A",new getData());
+            	  //mSoap.getGroup("175483529136581","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A",new getData());
+            	  // mSoap.getGroup("177648985606389","146472442045328|c01bd0d9a3083974f876ba9e-100000925243158|ZBeUd36wcM3naVv5N0j8dQmp0_A",new getData());
                }
            }        
 	   }
