@@ -6,8 +6,8 @@ public class FbQrGroup {
 	public String[] uids=null;
 	public String[] explode(String uidsText){
 		String buff[] = uidsText.split(";") ;
-		uids = new String[buff.length-1];
-		for(int i=0;i<buff.length-1;i++){
+		uids = new String[buff.length];
+		for(int i=0;i<buff.length;i++){
 			uids[i]=buff[i];
 		}
 		return uids;

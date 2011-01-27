@@ -145,12 +145,23 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 			super.onStart();
 			//start activity code
 			db=new FbQrDatabase(this);
-			reLoading();
+			Bundle extras = getIntent().getExtras();
+			if(extras !=null){
+				int[] ids= extras.getIntArray("ids"); 
+				showGroup(ids);
+			}
+			else reLoading();
 		}
 		
 		public void onResume(){
 			super.onResume();
 			db=new FbQrDatabase(this);
+			Bundle extras = getIntent().getExtras();
+			if(extras !=null){
+				int[] ids= extras.getIntArray("ids"); 
+				showGroup(ids);
+			}
+			else reLoading();
 			reLoading();
 		}
 		
@@ -217,6 +228,20 @@ public class FbQrContactlistEdit extends FbQrContactlist {
 		     	this.setListAdapter(adapList);
 		     	adapList.notifyDataSetChanged();
 		     	startManagingCursor(cursor);
+			}
+			private void showGroup(int[] ids){		
+				//start activity code
+				FbQrProfile profile=null;
+		     	contactList = new ArrayList<ContactView>();  
+		     	for(int i:ids) {    
+		     		if(i<0) continue;
+		     		profile=db.getProfile(i);
+		     		contactList.add(new  ContactView(profile.name,profile.uid,profile.position));
+			    }     
+		     	db.close();
+		     	adapList=new FbQrArrayAdapter(this,contactList);
+		     	this.setListAdapter(adapList);
+		     	adapList.notifyDataSetChanged();
 			}
 		@Override
 		protected void onListItemClick(ListView l, View v, int position, long id) {			

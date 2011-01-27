@@ -206,13 +206,11 @@ public class FbQrGrouplist extends ListActivity {
 		
 	}
 	
-	private static final int editBtnId = Menu.FIRST;
-	private static final int loginBtnId = Menu.FIRST+1;
-	private static final int logoutBtnId = Menu.FIRST+2;
+	private static final int loginBtnId = Menu.FIRST;
+	private static final int logoutBtnId = Menu.FIRST+1;
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0,editBtnId ,editBtnId,"Edit");
 		if(db.getAccessToken()==null)
 			menu.add(0,loginBtnId ,loginBtnId,"Login");
 		else menu.add(0,logoutBtnId ,logoutBtnId,"Logout");
@@ -235,10 +233,6 @@ public class FbQrGrouplist extends ListActivity {
 	    // Handle item selection
 		Intent intent;
 	    switch (item.getItemId()) {
-	    case editBtnId:
-	    	intent= new Intent(this, FbQrGrouplistEdit.class);
-	    	startActivityForResult(intent,1);		
-	        return true;
 	    case loginBtnId:
 	    	intent = new Intent(this, FbQrBackground.class);
 	    	intent.putExtra("MODE", "login");
