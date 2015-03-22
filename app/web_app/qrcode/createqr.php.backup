@@ -1,0 +1,67 @@
+<?
+
+$size = ($_REQUEST['size'])?$_REQUEST['size']:230;
+//$logo = ($_REQUEST['logo'])?$_REQUEST['logo']:3;
+$data = $_REQUEST['data'];
+$uid = $_REQUEST['uid'];
+
+//Gen with Google Chart API
+$ch = curl_init();    
+curl_setopt($ch, CURLOPT_URL,"http://chart.apis.google.com/chart?");  
+curl_setopt($ch, CURLOPT_POST, TRUE); 
+curl_setopt($ch, CURLOPT_POSTFIELDS, 'cht=qr&chs='.$size.'x'.$size.'&choe=UTF-8&chld=H|1&chl='.$data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+$im=curl_exec ($ch);     
+curl_close ($ch); 
+$im = imagecreatefromstring($im);
+if(!$im){
+	echo "error";
+	die();
+}
+
+//Insert Logo
+$src = imagecreatefromgif('qrlogo.gif');
+
+
+$new_width=$size/2;
+$new_height=$size/2;
+
+$resized = imagecreate($new_width, $new_height);
+$white = imagecolorallocate($resized, 255, 255,255);
+imagecolortransparent($resized, $white );
+imagecopyresized($resized,$src,0,0,0,0,$new_width,$new_height,imagesx($src),imagesy($src));
+
+$x=imagesx($im)/2-$new_width/2;
+$y=imagesy($im)/2-$new_height/2;
+
+imagecopy($im,$resized,$x,$y,0,0,$new_width,$new_height);
+
+$imdisplay = imagecreatetruecolor($size, $size+70);
+$displayPath = "http://graph.facebook.com/$uid/picture";
+$display =  imagecreatefromjpeg($displayPath);
+
+$background_color = imagecolorallocate($imdisplay, 255, 255, 255);
+
+
+imagecopy($imdisplay,$im,0,0,0,0,$size,$size);
+imagecopy($imdisplay,$display,10,$size+10,0,0,50,50);
+$text_color = imagecolorallocate($imdisplay,0, 0, 0);
+imagestring($imdisplay, 1,70, $size+10,  "Name", $text_color);
+
+//display
+
+
+header("Content-type: image/png");
+
+$file_location='tmp/'.$uid.'.png';
+//imagepng($imdisplay,$file_location,0,null);
+imagepng($imdisplay,null,0,null);
+
+/*
+header("Content-type: image/gif");
+imagegif($im);*/
+
+imagedestroy($im);
+imagedestroy($src);
+imagedestroy($resized);
+?>

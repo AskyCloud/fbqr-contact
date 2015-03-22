@@ -1,0 +1,66 @@
+@charset "utf-8";
+/* CSS Document */
+body{
+	margin:0px 0px;
+	padding:0px 0px;
+	font-family:tahoma;
+	font-size:12px;
+	color: #000;
+}
+#bg{
+	background-color: #FFF;
+	color: #666;
+	font-family:tahoma;
+	margin:0px 0px;
+	padding:0px 0px;
+}
+#setting td{
+border-bottom:1px solid #ccc;
+}
+a:link {
+	text-decoration: none;
+}
+a:visited {
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+a:active {
+	text-decoration: none;
+}
+#back,#back a{
+	color:#333;
+	text-decoration: none;
+}
+
+#show_table td{
+	border-spacing:3px;
+	border-bottom:1px solid #CACACA;
+}
+#s{
+	background-color:#E4E4E4;
+}
+#bold{
+	font-weight:bold;
+}
+#lets_go a{
+	color:#999;
+	font-size:20px;
+}
+#menu{
+	display:block;
+	padding-top:25px;
+	margin:auto;
+}
+#menu li{
+	display:inline;
+}
+#menu li a{
+	text-decoration: none;
+	font-size:12px;
+	color:#FFF;
+}
+#bb{
+border-bottom:1px solid #ccc;
+}

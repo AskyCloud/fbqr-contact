@@ -1,0 +1,3 @@
+DELETE `tkroputa_db`.`profiles`,`tkroputa_db`.`setting` FROM `tkroputa_db`.`profiles` LEFT JOIN `tkroputa_db`.`setting` ON `profiles`.uid=`setting`.uid WHERE `profiles`.uid =$uid;
+
+SELECT `profiles`.`uid`, `setting`.`uid` FROM `tkroputa_db`.`profiles`, `tkroputa_db`.`setting` WHERE `profiles`.`uid` ='$uid' AND `setting`.`uid`='$uid';
